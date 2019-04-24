@@ -6,7 +6,7 @@ void getQString(QString & out) {
 }
 
 bool downloadHTML(const QString url, const QString fullFilename) {
-    // Загрузка html
+    // Загрузка html-разметки
     QNetworkAccessManager manager; // объект для запроса
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // выполняем запрос
     QEventLoop event;
@@ -73,7 +73,7 @@ void repDuplicateTags(QDomDocument & tree) {
 
 }
 
-void postOrderDFS(QDomNode & node) {
+void treeHtml::postOrderDFS(QDomNode & node) {
     // Если текущий узел пустой то прекратить обход текущего узла
     if(node.isNull()) {
         return;
