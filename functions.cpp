@@ -15,7 +15,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
 
     // Если не удалось загрузить html
     if(response->error() != QNetworkReply::NoError) {
-        return false;
+        throw QString("function dowloadHTML: Unable to access html file at input URL.");
     }
 
     // Поместить скачанные данные в QString
@@ -31,7 +31,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
     }
     else {
         outputHtml.close();
-        return false;
+        throw QString("function dowloadHTML: Unable to save file.");
     }
 
     outputHtml.close();
@@ -90,16 +90,3 @@ void treeHtml::postOrderDFS(QDomNode & node) {
     postOrderDFS(nextChild);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
