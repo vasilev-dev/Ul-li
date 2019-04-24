@@ -51,7 +51,11 @@ bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
     // ∆дать пока процесс не выполнитс€
     process.waitForFinished(-1);
 
-    return process.exitStatus() == QProcess::NormalExit;
+    if(process.exitStatus() != QProcess::NormalExit) {
+        throw QString("function htmlToXml: Process error. Perhaps in the root folder is missing \"tide.exe\".");
+    }
+
+    return true;
 }
 
 bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
