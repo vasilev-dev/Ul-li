@@ -12,17 +12,31 @@
 #include <QDir>
 #include <QDebug>
 #include <QTextStream>
-
+#include <QVector>
 
 class treeHtml {
 public:
     QDomDocument tree; // html в виде дерева
+
+    QVector<QDomNodeList> levels;
 
     /*!
     * Рекурсивный постфиксный обход дерева в глубину
     *\param [in] node - узел дерева
     */
     void postOrderDFS(QDomNode & node);
+
+    /*!
+    * Проверяет можно ли произвести замену повтоящихся тегов на конструкцию маркированного списка ul-li
+    *\param [in] node - узел дерева
+    */
+    bool canReplaceDuplicateTags(QDomNode & node) const;
+
+    /*!
+    * Считает количество повтоящихся тегов
+    *\param [in] node - узел дерева
+    */
+    uint countDuplicateTags(QDomNode & node) const;
 };
 
 /*!
@@ -59,8 +73,9 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 /*!
 * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
 *\param [in] tree - разметка, представленная в виде дерева
+*\param [in] repTags - заменяемые теги
 */
-void repDuplicateTags(treeHtml & tree);
+void repDuplicateTags(QDomDocument & tree, const QStringList & repTags);
 
 /*!
 * Производит конвертацию xml-разметки в html-разметку средставами HTML Tidy
