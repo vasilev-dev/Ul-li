@@ -1,4 +1,4 @@
-#include "functions.h"
+п»ї#include "functions.h"
 
 void getQString(QString & out) {
     QTextStream s(stdin);
@@ -6,25 +6,25 @@ void getQString(QString & out) {
 }
 
 bool downloadHTML(const QString url, const QString fullFilename) {
-    // Загрузка html-разметки
-    QNetworkAccessManager manager; // объект для запроса
-    QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // выполняем запрос
+    // Р—Р°РіСЂСѓР·РєР° html-СЂР°Р·РјРµС‚РєРё
+    QNetworkAccessManager manager; // РѕР±СЉРµРєС‚ РґР»СЏ Р·Р°РїСЂРѕСЃР°
+    QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // РІС‹РїРѕР»РЅСЏРµРј Р·Р°РїСЂРѕСЃ
     QEventLoop event;
-    QObject::connect(response,SIGNAL(finished()),&event,SLOT(quit())); // сигнал загрузки
+    QObject::connect(response,SIGNAL(finished()),&event,SLOT(quit())); // СЃРёРіРЅР°Р» Р·Р°РіСЂСѓР·РєРё
     event.exec();
 
-    // Если не удалось загрузить html
+    // Р•СЃР»Рё РЅРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ html
     if(response->error() != QNetworkReply::NoError) {
         throw QString("function dowloadHTML: Unable to access html file at input URL.");
     }
 
-    // Поместить скачанные данные в QString
+    // РџРѕРјРµСЃС‚РёС‚СЊ СЃРєР°С‡Р°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ РІ QString
     QString html = response->readAll();
 
-    // Cохранение html
+    // CРѕС…СЂР°РЅРµРЅРёРµ html
     QFile outputHtml(fullFilename);
 
-    // Если удалось открыть файл для записи
+    // Р•СЃР»Рё СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
     if(outputHtml.open(QIODevice::WriteOnly)) {
         QTextStream out(&outputHtml);
         out << html;
@@ -39,16 +39,16 @@ bool downloadHTML(const QString url, const QString fullFilename) {
 }
 
 bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
-    QProcess process;   // создаем новый процесс
-    QStringList params; // параметры для запуска tidy.exe
+    QProcess process;   // СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ РїСЂРѕС†РµСЃСЃ
+    QStringList params; // РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ Р·Р°РїСѓСЃРєР° tidy.exe
 
     params << "-config" << "config.txt" << "-o" << xmlFilename << "-asxml" << htmlFilename;
 
-    // Открывать процесс в дочернем окне
+    // РћС‚РєСЂС‹РІР°С‚СЊ РїСЂРѕС†РµСЃСЃ РІ РґРѕС‡РµСЂРЅРµРј РѕРєРЅРµ
     process.setProcessChannelMode(QProcess::MergedChannels);
-    // Запуск процесса
+    // Р—Р°РїСѓСЃРє РїСЂРѕС†РµСЃСЃР°
     process.start("tidy.exe", params);
-    // Ждать пока процесс не выполнится
+    // Р–РґР°С‚СЊ РїРѕРєР° РїСЂРѕС†РµСЃСЃ РЅРµ РІС‹РїРѕР»РЅРёС‚СЃСЏ
     process.waitForFinished(-1);
 
     if(process.exitStatus() != QProcess::NormalExit) {
@@ -62,11 +62,11 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
     QString errorMsg;
     int errorLine, errorColumn;
 
-    // Открыть xml для чтения
+    // РћС‚РєСЂС‹С‚СЊ xml РґР»СЏ С‡С‚РµРЅРёСЏ
     QFile xml(xmlFilename);
     if (!xml.open(QIODevice::ReadOnly))
         throw QString("function parsingXml: Unable to open xml file.");
-    // Парсинг xml
+    // РџР°СЂСЃРёРЅРі xml
     if (!tree.setContent(&xml, &errorMsg, &errorLine, &errorColumn)) {
         xml.close();
         throw QString("function parsingXml: Unable to parsing xml file. Error message: ") + errorMsg +
@@ -82,18 +82,18 @@ void repDuplicateTags(QDomDocument & tree) {
 }
 
 void treeHtml::postOrderDFS(QDomNode & node) {
-    // Если текущий узел пустой то прекратить обход текущего узла
+    // Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СѓР·РµР» РїСѓСЃС‚РѕР№ С‚Рѕ РїСЂРµРєСЂР°С‚РёС‚СЊ РѕР±С…РѕРґ С‚РµРєСѓС‰РµРіРѕ СѓР·Р»Р°
     if(node.isNull()) {
         return;
     }
 
-    // Обойти первое (левое) поддерево
+    // РћР±РѕР№С‚Рё РїРµСЂРІРѕРµ (Р»РµРІРѕРµ) РїРѕРґРґРµСЂРµРІРѕ
     QDomNode firstChild = node.firstChild();
     postOrderDFS(firstChild);
 
     qDebug() << node.toElement().tagName();
 
-    // Обойти следущее поддерево(вправо)
+    // РћР±РѕР№С‚Рё СЃР»РµРґСѓС‰РµРµ РїРѕРґРґРµСЂРµРІРѕ(РІРїСЂР°РІРѕ)
     QDomNode nextChild = node.nextSibling();
     postOrderDFS(nextChild);
 

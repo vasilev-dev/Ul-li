@@ -1,5 +1,7 @@
-#ifndef FUNCTIONS_H
+п»ї#ifndef FUNCTIONS_H
 #define FUNCTIONS_H
+
+#include <iostream>
 
 #include <QtCore/QCoreApplication>
 #include <QDomDocument>
@@ -14,59 +16,58 @@
 
 class treeHtml {
 public:
-    QDomDocument tree; // html в виде дерева
+    QDomDocument tree; // html РІ РІРёРґРµ РґРµСЂРµРІР°
 
     /*!
-    * Рекурсивный постфиксный обход дерева в глубину
-    *\param [in] node - узел дерева
+    * Р РµРєСѓСЂСЃРёРІРЅС‹Р№ РїРѕСЃС‚С„РёРєСЃРЅС‹Р№ РѕР±С…РѕРґ РґРµСЂРµРІР° РІ РіР»СѓР±РёРЅСѓ
+    *\param [in] node - СѓР·РµР» РґРµСЂРµРІР°
     */
     void postOrderDFS(QDomNode & node);
 };
 
 /*!
-* Получает QString из стандартного потока ввода
-*\param [out] out - полученная строка
+* РџРѕР»СѓС‡Р°РµС‚ QString РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РїРѕС‚РѕРєР° РІРІРѕРґР°
+*\param [out] out - РїРѕР»СѓС‡РµРЅРЅР°СЏ СЃС‚СЂРѕРєР°
 */
 void getQString(QString & out);
 
 /*!
-* Скачивает html-разметку по URL
-*\param [in] URL - URL-адрес для скачивания html
-*\param [in] fullFilename - полное имя, скачиваемого html-файла
-*\return - возвращает true, если html была успешно скачана и сохранена
+* РЎРєР°С‡РёРІР°РµС‚ html-СЂР°Р·РјРµС‚РєСѓ РїРѕ URL
+*\param [in] URL - URL-Р°РґСЂРµСЃ РґР»СЏ СЃРєР°С‡РёРІР°РЅРёСЏ html
+*\param [in] fullFilename - РїРѕР»РЅРѕРµ РёРјСЏ, СЃРєР°С‡РёРІР°РµРјРѕРіРѕ html-С„Р°Р№Р»Р°
+*\return - РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё html Р±С‹Р»Р° СѓСЃРїРµС€РЅРѕ СЃРєР°С‡Р°РЅР° Рё СЃРѕС…СЂР°РЅРµРЅР°
 */
 bool downloadHTML(const QString url, const QString fullFilename);
 
 /*!
-* Производит конвертацию html-разметки в xml-разметку средставами HTML Tidy
-* Создает файл, содержащий предупреждения и ошибки в html-разметке, в папке с исполняемым файлом
-*\param [in] htmlFilename - полное имя html-разметки
-*\param [in] xmlFilename - полное имя xml-разметки
-*\return - возвращает true, если конвертация произошла успешно
+* РџСЂРѕРёР·РІРѕРґРёС‚ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ html-СЂР°Р·РјРµС‚РєРё РІ xml-СЂР°Р·РјРµС‚РєСѓ СЃСЂРµРґСЃС‚Р°РІР°РјРё HTML Tidy
+* РЎРѕР·РґР°РµС‚ С„Р°Р№Р», СЃРѕРґРµСЂР¶Р°С‰РёР№ РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёСЏ Рё РѕС€РёР±РєРё РІ html-СЂР°Р·РјРµС‚РєРµ, РІ РїР°РїРєРµ СЃ РёСЃРїРѕР»РЅСЏРµРјС‹Рј С„Р°Р№Р»РѕРј
+*\param [in] htmlFilename - РїРѕР»РЅРѕРµ РёРјСЏ html-СЂР°Р·РјРµС‚РєРё
+*\param [in] xmlFilename - РїРѕР»РЅРѕРµ РёРјСЏ xml-СЂР°Р·РјРµС‚РєРё
+*\return - РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РїСЂРѕРёР·РѕС€Р»Р° СѓСЃРїРµС€РЅРѕ
 */
 bool htmlToXml(const QString htmlFilename, const QString xmlFilename);
 
 /*!
-* Парсинг xml-разметки
-*\param [in] xmlFilename - полное имя xml-разметки
-*\param [out] treeHtml - дерево
-*\return - возвращает true, если парсинг произошел успешно
+* РџР°СЂСЃРёРЅРі xml-СЂР°Р·РјРµС‚РєРё
+*\param [in] xmlFilename - РїРѕР»РЅРѕРµ РёРјСЏ xml-СЂР°Р·РјРµС‚РєРё
+*\param [out] treeHtml - РґРµСЂРµРІРѕ
+*\return - РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РїР°СЂСЃРёРЅРі РїСЂРѕРёР·РѕС€РµР» СѓСЃРїРµС€РЅРѕ
 */
 bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 
 /*!
-* Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
-*\param [in] tree - разметка, представленная в виде дерева
+* Р—Р°РјРµРЅСЏРµС‚ РїРѕРІС‚РѕСЂСЏСЋС‰РёРµ С‚РµРіРё РІ html-СЂР°Р·РјРµС‚РєРµ РЅР° РєРѕРЅСЃС‚СЂСѓРєС†РёСЋ РјР°СЂРєРёСЂРѕРІР°РЅРЅРѕРіРѕ СЃРїРёСЃРєР° ul-li
+*\param [in] tree - СЂР°Р·РјРµС‚РєР°, РїСЂРµРґСЃС‚Р°РІР»РµРЅРЅР°СЏ РІ РІРёРґРµ РґРµСЂРµРІР°
 */
 void repDuplicateTags(treeHtml & tree);
 
 /*!
-* Производит конвертацию xml-разметки в html-разметку средставами HTML Tidy
-*\param [in] xmlFilename - полное имя xml-разметки
-*\param [in] htmlFilename - полное имя html-разметки
-*\return - возвращает true, если конвертация произошла успешно
+* РџСЂРѕРёР·РІРѕРґРёС‚ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ xml-СЂР°Р·РјРµС‚РєРё РІ html-СЂР°Р·РјРµС‚РєСѓ СЃСЂРµРґСЃС‚Р°РІР°РјРё HTML Tidy
+*\param [in] xmlFilename - РїРѕР»РЅРѕРµ РёРјСЏ xml-СЂР°Р·РјРµС‚РєРё
+*\param [in] htmlFilename - РїРѕР»РЅРѕРµ РёРјСЏ html-СЂР°Р·РјРµС‚РєРё
+*\return - РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РїСЂРѕРёР·РѕС€Р»Р° СѓСЃРїРµС€РЅРѕ
 */
 bool xmlToHtml(const QString xmlFilename, const QString htmlFilename);
-
 
 #endif // FUNCTIONS_H
