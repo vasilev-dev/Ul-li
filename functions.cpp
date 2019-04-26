@@ -59,14 +59,18 @@ bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
 }
 
 bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
+    QString errorMsg;
+    int errorLine, errorColumn;
+
     // Открыть xml для чтения
     QFile xml(xmlFilename);
     if (!xml.open(QIODevice::ReadOnly))
-        return false;
+        throw QString("function parsingXml: Unable to open xml file.");
     // Парсинг xml
-    if (!tree.setContent(&xml)) {
+    if (!tree.setContent(&xml, &errorMsg, &errorLine, &errorColumn)) {
         xml.close();
-        return false;
+        throw QString("function parsingXml: Unable to parsing xml file. Error message: ") + errorMsg +
+                "from " + QString::number(errorLine) + " line, column " + QString::number(errorColumn) + ".";
     }
     xml.close();
 
