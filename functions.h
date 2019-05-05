@@ -1,7 +1,7 @@
 ﻿#ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#define qprint qDebug()
+#define qprint qDebug().nospace().noquote()
 
 #include <iostream>
 
@@ -43,7 +43,7 @@ public:
     *\param [in] node - узел дерева
     *\param [out] childs - дети
     */
-    void getChilds(QDomNode & node, QQueue<QDomNode> childs);
+    void getChilds(QDomNode & node, QQueue<QDomNode> & childs);
 };
 
 /*!

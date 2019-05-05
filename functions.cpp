@@ -87,10 +87,41 @@ uint treeHtml::getNeighbors() {
 }
 
 void treeHtml::bfs(QDomNode & node) {
+    QDomNode currentNode = node;
+    QQueue<QDomNode> currentLevel;
+    QQueue<QDomNode> childs;
+    uint countLevels = 0;
+
+    // Добавить первый этаж в очередь
+    while(!currentNode.isNull()) {
+        currentLevel.enqueue(currentNode);
+        currentNode = currentNode.nextSibling();
+    }
+
+    // Пока все этажы дерева не пройдены
+    while(!currentLevel.isEmpty()) {
+
+        qprint << "Level: " + QString::number(countLevels);
+
+        // Добавить всех детей текущего уровня в очередь
+        while(!currentLevel.isEmpty()) {
+            currentNode = currentLevel.dequeue();
+            if(currentNode.isElement()) {
+                qprint << "   " +currentNode.toElement().tagName();
+            }
+            getChilds(currentNode, childs);
+        }
+
+        // Перейти на следующий этаж
+        currentLevel = childs;
+        childs.clear();
+        countLevels++;
+    }
+
 
 }
 
-void treeHtml::getChilds(QDomNode &node, QQueue<QDomNode> childs) {
+void treeHtml::getChilds(QDomNode &node, QQueue<QDomNode> & childs) {
     // Получить первого ребенка
     QDomNode currentChild = node.firstChild();
 
