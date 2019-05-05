@@ -1,6 +1,8 @@
 ﻿#ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#define qprint qDebug()
+
 #include <iostream>
 
 #include <QtCore/QCoreApplication>
@@ -13,30 +15,35 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QVector>
+#include <QList>
+#include <QQueue>
+
+typedef QVector<QDomNode> neighbors; // узлы-соседи
 
 class treeHtml {
 public:
     QDomDocument tree; // html в виде дерева
 
-    QVector<QDomNodeList> levels;
+    QVector<neighbors> levels; // уровни дерева
 
     /*!
-    * Рекурсивный постфиксный обход дерева в глубину
-    *\param [in] node - узел дерева
+    * Получить соседей на всех этажах дерева
+    *\return - количество этажей дерева
     */
-    void postOrderDFS(QDomNode & node);
+    uint getNeighbors();
 
     /*!
-    * Проверяет можно ли произвести замену повтоящихся тегов на конструкцию маркированного списка ul-li
+    * Рекурсивный обход дерева в ширину
     *\param [in] node - узел дерева
     */
-    bool canReplaceDuplicateTags(QDomNode & node) const;
+    void bfs(QDomNode & root);
 
     /*!
-    * Считает количество повтоящихся тегов
+    * Получить очередь из детей узла
     *\param [in] node - узел дерева
+    *\param [out] childs - дети
     */
-    uint countDuplicateTags(QDomNode & node) const;
+    void getChilds(QDomNode & node, QQueue<QDomNode> childs);
 };
 
 /*!

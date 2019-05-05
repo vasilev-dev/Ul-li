@@ -70,31 +70,68 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
     if (!tree.setContent(&xml, &errorMsg, &errorLine, &errorColumn)) {
         xml.close();
         throw QString("function parsingXml: Unable to parsing xml file. Error message: ") + errorMsg +
-                "from " + QString::number(errorLine) + " line, column " + QString::number(errorColumn) + ".";
+                " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn) + ".";
     }
     xml.close();
 
     return true;
 }
 
-void repDuplicateTags(QDomDocument & tree) {
+void repDuplicateTags(QDomDocument & tree, QStringList repTags) {
 
 }
 
-void treeHtml::postOrderDFS(QDomNode & node) {
-    // Если текущий узел пустой то прекратить обход текущего узла
-    if(node.isNull()) {
-        return;
+uint treeHtml::getNeighbors() {
+
+
+}
+
+void treeHtml::bfs(QDomNode & node) {
+
+}
+
+void treeHtml::getChilds(QDomNode &node, QQueue<QDomNode> childs) {
+    // Получить первого ребенка
+    QDomNode currentChild = node.firstChild();
+
+    // Если у входного узла есть дети
+    if(!currentChild.isNull()) {
+        // Добавить первого ребенка в очередь
+        childs.enqueue(currentChild);
+
+        // Пока у текущего ребенка есть братья
+        while(!currentChild.nextSibling().isNull()) {
+            // Перейти к следущему ребенку
+            currentChild = currentChild.nextSibling();
+            // Добавить ребенка в очередь
+            childs.enqueue(currentChild);
+        }
     }
-
-    // Обойти первое (левое) поддерево
-    QDomNode firstChild = node.firstChild();
-    postOrderDFS(firstChild);
-
-    qDebug() << node.toElement().tagName();
-
-    // Обойти следущее поддерево(вправо)
-    QDomNode nextChild = node.nextSibling();
-    postOrderDFS(nextChild);
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
