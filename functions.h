@@ -27,16 +27,16 @@ public:
     QVector<neighbors> levels; // уровни дерева
 
     /*!
-    * Получить соседей на всех этажах дерева
-    *\return - количество этажей дерева
+    * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
+    *\param [in] tree - разметка, представленная в виде дерева
+    *\param [in] repTags - заменяемые теги
     */
-    uint getNeighbors();
+    void repDuplicateTags(const QStringList & repTags);
 
     /*!
-    * Рекурсивный обход дерева в ширину
-    *\param [in] node - узел дерева
+    * Получить соседей на всех этажах дерева (обход дерева в ширину)
     */
-    void bfs(QDomNode & root);
+    void getNeighbors();
 
     /*!
     * Получить очередь из детей узла
@@ -44,6 +44,14 @@ public:
     *\param [out] childs - дети
     */
     void getChilds(QDomNode & node, QQueue<QDomNode> & childs);
+
+    /*!
+    * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
+    *\param [in] duplicateList - список повторяющихся тегов
+    */
+    void insertUL_LI(QVector<QDomNode> duplicateList);
+
+
 };
 
 /*!
