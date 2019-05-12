@@ -69,7 +69,7 @@ void getQString(QString & out);
 bool downloadHTML(const QString url, const QString fullFilename);
 
 /*!
-* Производит конвертацию html-разметки в xml-разметку средставами HTML Tidy
+* Производит конвертацию html-разметки в xml-разметку средставами xmllint
 * Создает файл, содержащий предупреждения и ошибки в html-разметке, в папке с исполняемым файлом
 *\param [in] htmlFilename - полное имя html-разметки
 *\param [in] xmlFilename - полное имя xml-разметки
@@ -93,7 +93,7 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 void repDuplicateTags(QDomDocument & tree, const QStringList & repTags);
 
 /*!
-* Производит конвертацию xml-разметки в html-разметку средставами HTML Tidy
+* Производит конвертацию xml-разметки в html-разметку средставами xmllint
 *\param [in] xmlFilename - полное имя xml-разметки
 *\param [in] htmlFilename - полное имя html-разметки
 *\return - возвращает true, если конвертация произошла успешно

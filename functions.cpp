@@ -39,19 +39,11 @@ bool downloadHTML(const QString url, const QString fullFilename) {
 }
 
 bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
-    QProcess process;   // создаем новый процесс
-    QStringList params; // параметры для запуска tidy.exe
+    QStringList params; // параметры для запуска xmllint
 
-    params << "-config" << "config.txt" << "-o" << xmlFilename << "-asxml" << htmlFilename;
+    params << "-html" << "-xmlout" << htmlFilename << "-output" << xmlFilename;
 
-    // Открывать процесс в дочернем окне
-    process.setProcessChannelMode(QProcess::MergedChannels);
-    // Запуск процесса
-    process.start("tidy.exe", params);
-    // Ждать пока процесс не выполнится
-    process.waitForFinished(-1);
-
-    if(process.exitStatus() != QProcess::NormalExit) {
+    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
         throw QString("function htmlToXml: Process error. Perhaps in the root folder is missing \"tide.exe\".");
     }
 
@@ -102,7 +94,7 @@ void treeHtml::repDuplicateTags(const QStringList & repTags) {
             }
             else if(countRepTags > 0) { // иначе, если последовательсть прервалась
                 // заменить последовательность на конструкцию ul-li
-                insertUL_LI(duplicateList);
+                //insertUL_LI(duplicateList);
                 // обнулить список повторяющихся тегов
                 duplicateList.clear();
                 // обнулить счетчик повторяющихся тегов
