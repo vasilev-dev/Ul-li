@@ -77,39 +77,29 @@ void treeHtml::repDuplicateTags(const QStringList & repTags) {
     for(int i = levels.length() - 1; i >= 0 ; i--) {
 
         QVector<QDomNode> duplicateList; // список повторяющихся тегов
-        uint countRepTags = 0;           // текущее количество повторяющихся тегов
+        QString tag = ""; // тег текущей последовательности
 
-        // пусть текущий повторяющийся тег - первый элемент на этаже
-        QString tag = levels[i][0].toElement().tagName();
-        duplicateList.append(levels[i][0]);
-
-        // для всех элементов на этаже кроме первого
-        for(int j = 1; j < levels[i].length(); j++) {
+        // для всех элементов на этаже
+        for(int j = 0; j < levels[i].length(); j++) {
             // если последовательность тегов продолжается то
             if(levels[i][j].toElement().tagName() == tag) {
                 // добавить элемент в список повторяющихся тегов
                 duplicateList.append(levels[i][j]);
-                // увеличить счетчик повторяющихся тегов
-                countRepTags++;
             }
-            else if(countRepTags > 0) { // иначе, если последовательсть прервалась
+            else if(duplicateList.length() > 0) { // иначе, если последовательсть прервалась
                 // заменить последовательность на конструкцию ul-li
                 //insertUL_LI(duplicateList);
                 // обнулить список повторяющихся тегов
                 duplicateList.clear();
-                // обнулить счетчик повторяющихся тегов
-                countRepTags = 0;
                 // начать новую последовательность
                 tag = levels[i][j].toElement().tagName();
                 duplicateList.append(levels[i][j]);
-
             }
             else { // иначе, если последовательность не образовалась
+                // обнулить список повторяющихся тегов
+                duplicateList.clear();
                 // начать новую последовательность
                 tag = levels[i][j].toElement().tagName();
-                duplicateList.append(levels[i][j]);
-                // обнулить счетчик повторяющихся тегов
-                countRepTags = 0;
             }
         }
     }

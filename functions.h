@@ -4,7 +4,6 @@
 #define qprint qDebug().nospace().noquote()
 
 #include <iostream>
-
 #include <QtCore/QCoreApplication>
 #include <QDomDocument>
 #include <QNetworkAccessManager>
