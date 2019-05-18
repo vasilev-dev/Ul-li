@@ -18,32 +18,21 @@
 #include <QList>
 #include <QQueue>
 
-typedef QVector<QDomNode> neighbors; // узлы-соседи
-
 class treeHtml {
 public:
     QDomDocument tree; // html в виде дерева
 
-    QVector<neighbors> levels; // уровни дерева
-
     /*!
-    * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
-    *\param [in] tree - разметка, представленная в виде дерева
-    *\param [in] repTags - заменяемые теги
-    */
-    void repDuplicateTags(const QStringList & repTags);
-
-    /*!
-    * Получить соседей на всех этажах дерева (обход дерева в ширину)
-    */
-    void getNeighbors();
-
-    /*!
-    * Получить очередь из детей узла
+    * Рекурсивный префиксный обход дерева в глубину
     *\param [in] node - узел дерева
-    *\param [out] childs - дети
     */
-    void getChilds(QDomNode & node, QQueue<QDomNode> & childs);
+    void preOrder(QDomNode & node);
+
+    /*!
+    * Получить детей узла
+    *\param [in] node - узел дерева
+    */
+    void getChildren(QDomNode & node, QQueue<QDomNode*> & children);
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
@@ -51,7 +40,13 @@ public:
     */
     void insertUL_LI(QVector<QDomNode> duplicateList);
 
-
+public:
+    /*!
+    * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
+    *\param [in] tree - разметка, представленная в виде дерева
+    *\param [in] repTags - заменяемые теги
+    */
+    void repDuplicateTags(const QStringList & repTags);
 };
 
 /*!
@@ -84,13 +79,6 @@ bool htmlToXml(const QString htmlFilename, const QString xmlFilename);
 *\return - возвращает true, если парсинг произошел успешно
 */
 bool parsingXml(const QString xmlFilename, QDomDocument & tree);
-
-/*!
-* Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
-*\param [in] tree - разметка, представленная в виде дерева
-*\param [in] repTags - заменяемые теги
-*/
-void repDuplicateTags(QDomDocument & tree, const QStringList & repTags);
 
 /*!
 * Производит конвертацию xml-разметки в html-разметку средставами xmllint

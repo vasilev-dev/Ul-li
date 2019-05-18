@@ -70,144 +70,70 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
 }
 
 void treeHtml::repDuplicateTags(const QStringList & repTags) {
-    // заполнить этажи соседями
-    getNeighbors();
 
-    // для всех этажей, начиная от самого нижнего
-    for(int i = levels.length() - 1; i >= 0 ; i--) {
+}
 
-        QVector<QDomNode> duplicateList; // список повторяющихся тегов
-        uint countRepTags = 0;           // текущее количество повторяющихся тегов
+void treeHtml::preOrder(QDomNode & node) {
+    QQueue<QDomNode*> childrenNodes;
+    QDomNode * curNode;
 
-        // пусть текущий повторяющийся тег - первый элемент на этаже
-        QString tag = levels[i][0].toElement().tagName();
-        duplicateList.append(levels[i][0]);
+    if(node.isNull() || node.isText())
+        return;
 
-        // для всех элементов на этаже кроме первого
-        for(int j = 1; j < levels[i].length(); j++) {
-            // если последовательность тегов продолжается то
-            if(levels[i][j].toElement().tagName() == tag) {
-                // добавить элемент в список повторяющихся тегов
-                duplicateList.append(levels[i][j]);
-                // увеличить счетчик повторяющихся тегов
-                countRepTags++;
-            }
-            else if(countRepTags > 0) { // иначе, если последовательсть прервалась
-                // заменить последовательность на конструкцию ul-li
-                //insertUL_LI(duplicateList);
-                // обнулить список повторяющихся тегов
-                duplicateList.clear();
-                // обнулить счетчик повторяющихся тегов
-                countRepTags = 0;
-                // начать новую последовательность
-                tag = levels[i][j].toElement().tagName();
-                duplicateList.append(levels[i][j]);
+    qprint << node.toElement().tagName();
 
-            }
-            else { // иначе, если последовательность не образовалась
-                // начать новую последовательность
-                tag = levels[i][j].toElement().tagName();
-                duplicateList.append(levels[i][j]);
-                // обнулить счетчик повторяющихся тегов
-                countRepTags = 0;
-            }
+    getChildren(node, childrenNodes);
+    for(int i = 0; i < childrenNodes.length(); i++) {
+        curNode = childrenNodes.dequeue();
+        preOrder(*curNode);
+    }
+}
+
+void treeHtml::getChildren(QDomNode & node, QQueue<QDomNode *> & children) {
+    QDomNode * curChild = new QDomNode();
+    // если у узла есть дети
+    if(node.hasChildNodes()) {
+        // добавить в очередь первого ребенка
+        curChild = &(node.firstChild());
+        children.enqueue(curChild);
+
+        //пока есть дети
+        while(!curChild->nextSibling().isNull()) {
+            curChild = curChild->nextSibling();
+            children.enqueue(curChild);
         }
     }
 }
 
-void treeHtml::getNeighbors() {
 
-    QDomNode currentNode = tree.firstChild();
-    QQueue<QDomNode> currentLevel;
-    QQueue<QDomNode> childs;
-    uint countLevels = 0;
+void treeHtml::insertUL_LI(QVector<QDomNode> duplicateList) {
+    // получить родителя
+    QDomNode parent = duplicateList[0].parentNode();
 
-    // Добавить первый этаж в очередь
-    while(!currentNode.isNull()) {
-        currentLevel.enqueue(currentNode);
-        currentNode = currentNode.nextSibling();
+    // удалить связь родителя с повторяющися тегами
+    for(int i = 0; i < duplicateList.length(); i++) {
+        parent.removeChild(duplicateList[i]);
     }
 
-    // Пока все этажы дерева не пройдены
-    while(!currentLevel.isEmpty()) {
+    // создать тег ul
+    QDomElement ul;
+    ul.setTagName("ul");
 
-        QVector<QDomNode> nodes;
+    // вставляем тег ul
+    parent.appendChild(ul);
 
-        // Добавить всех детей текущего уровня в очередь
-        while(!currentLevel.isEmpty()) {
-            currentNode = currentLevel.dequeue();
-            if(currentNode.isElement()) {
-                nodes.append(currentNode);
-            }
-            getChilds(currentNode, childs);
-        }
-
-        // Перейти на следующий этаж
-        currentLevel = childs;
-        childs.clear();
-        countLevels++;
-
-        if(!nodes.isEmpty()) {
-            levels.append(nodes);
-        }
+    // заменить повторяющиеся теги на li
+    for(int i = 0; i < duplicateList.length(); i++) {
+        QDomElement li = duplicateList[i].toElement();
+        li.setTagName("li");
+        duplicateList[i] = li;
     }
 
+    // сделать ul родителем тегов li
+    for(int i = 0; i < duplicateList.length(); i++) {
 
-}
-
-/*
-void treeHtml::bfs(QDomNode & node) {
-    QDomNode currentNode = node;
-    QQueue<QDomNode> currentLevel;
-    QQueue<QDomNode> childs;
-    uint countLevels = 0;
-
-    // Добавить первый этаж в очередь
-    while(!currentNode.isNull()) {
-        currentLevel.enqueue(currentNode);
-        currentNode = currentNode.nextSibling();
-    }
-
-    // Пока все этажы дерева не пройдены
-    while(!currentLevel.isEmpty()) {
-
-        qprint << "Level: " + QString::number(countLevels);
-
-        // Добавить всех детей текущего уровня в очередь
-        while(!currentLevel.isEmpty()) {
-            currentNode = currentLevel.dequeue();
-            if(currentNode.isElement()) {
-                qprint << "   " +currentNode.toElement().tagName();
-            }
-            getChilds(currentNode, childs);
-        }
-
-        // Перейти на следующий этаж
-        currentLevel = childs;
-        childs.clear();
-        countLevels++;
-    }
-}*/
-
-void treeHtml::getChilds(QDomNode &node, QQueue<QDomNode> & childs) {
-    // Получить первого ребенка
-    QDomNode currentChild = node.firstChild();
-
-    // Если у входного узла есть дети
-    if(!currentChild.isNull()) {
-        // Добавить первого ребенка в очередь
-        childs.enqueue(currentChild);
-
-        // Пока у текущего ребенка есть братья
-        while(!currentChild.nextSibling().isNull()) {
-            // Перейти к следущему ребенку
-            currentChild = currentChild.nextSibling();
-            // Добавить ребенка в очередь
-            childs.enqueue(currentChild);
-        }
     }
 }
-
 
 
 
