@@ -18,34 +18,39 @@
 #include <QQueue>
 
 class treeHtml {
-public:
+protected:
     QDomDocument tree; // html в виде дерева
 
     /*!
     * Рекурсивный префиксный обход дерева в глубину
     *\param [in] node - узел дерева
     */
-    void preOrder(QDomNode & node);
-
-    /*!
-    * Получить детей узла
-    *\param [in] node - узел дерева
-    */
-    void getChildren(QDomNode & node, QQueue<QDomNode*> & children);
+    void preOrder(QDomNode node);
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
     *\param [in] duplicateList - список повторяющихся тегов
     */
-    void insertUL_LI(QVector<QDomNode> duplicateList);
+    void insertUL_LI(QVector<QDomNode> &  duplicateList);
+
+private:
+    QStringList replaceableTags; // поддерживаемые замене на конструкцию ul-li теги
 
 public:
+    /*!
+    * Констуктор класса
+    *\param [in] tree - разметка, представленная в виде дерева
+    *\param [in] repTags - заменяемые теги
+    */
+    treeHtml(QDomDocument & tree);
+
     /*!
     * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
     *\param [in] tree - разметка, представленная в виде дерева
     *\param [in] repTags - заменяемые теги
     */
     void repDuplicateTags(const QStringList & repTags);
+
 };
 
 /*!
