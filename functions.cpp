@@ -111,20 +111,38 @@ void treeHtml::repDuplicateTags(const QStringList & repTags) {
 }
 
 void treeHtml::preOrder(QDomNode node) {
+    QVector<QDomNode> children;
+
     if(node.isNull() || node.isText())
-        return;
+            return;
 
     qprint << node.toElement().tagName();
 
-    node = node.firstChild();
-    while(!node.isNull()) {
-        preOrder(node);
-        node = node.nextSibling();
+    if(node.hasChildNodes()) {
+        getChildren(node, children);
+
+        for(int i = 0; i < children.length(); i++) {
+            qprint << "children " << i << ": " << children[i].toElement().tagName();
+        }
+
+        for(int i = 0; i < children.length(); i++) {
+            preOrder(children[i]);
+        }
     }
+
 }
 
 void treeHtml::insertUL_LI(QVector<QDomNode> & duplicateList) {
 
+}
+
+void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
+    QDomNode child = node.firstChild();
+
+    while(!child.isNull()) {
+        children.append(child);
+        child = child.nextSibling();
+    }
 }
 
 

@@ -4,17 +4,22 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    treeHtml html;
+    QDomDocument html;
+    QDomNode root;
 
     try {
-        parsingXml("example.html", html.tree);
+        parsingXml("example.html", html);
+
+        treeHtml treehtml(html);
+
+        root = treehtml.tree.firstChild().nextSibling();
+
+        treehtml.preOrder(root);
     }
     catch(QString & err) {
         qprint << err;
     }
 
-    QDomNode root = html.tree.firstChild().nextSibling();
-    html.preOrder(root);
 
     return a.exec();
 }

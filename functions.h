@@ -18,7 +18,7 @@
 #include <QQueue>
 
 class treeHtml {
-protected:
+public:
     QDomDocument tree; // html в виде дерева
 
     /*!
@@ -27,20 +27,27 @@ protected:
     */
     void preOrder(QDomNode node);
 
+private:
+    QStringList replaceableTags; // поддерживаемые замене на конструкцию ul-li теги
+
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
     *\param [in] duplicateList - список повторяющихся тегов
     */
     void insertUL_LI(QVector<QDomNode> &  duplicateList);
 
-private:
-    QStringList replaceableTags; // поддерживаемые замене на конструкцию ul-li теги
+    /*!
+    * Получить список детей узла node
+    *\param [in] node - узел
+    *\param [out] children - список детей узла
+    */
+    void getChildren(QDomNode & node, QVector<QDomNode> & children);
+
 
 public:
     /*!
     * Констуктор класса
     *\param [in] tree - разметка, представленная в виде дерева
-    *\param [in] repTags - заменяемые теги
     */
     treeHtml(QDomDocument & tree);
 
