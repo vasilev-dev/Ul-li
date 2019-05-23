@@ -32,9 +32,9 @@ private:
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
-    *\param [in] duplicateList - список повторяющихся тегов
+    *\param [in] sequence - список повторяющихся тегов
     */
-    void insertUL_LI(QVector<QDomNode> &  duplicateList);
+    void insertUL_LI(QVector<QDomNode> & sequence);
 
     /*!
     * Получить список детей узла node
@@ -43,6 +43,11 @@ private:
     */
     void getChildren(QDomNode & node, QVector<QDomNode> & children);
 
+    /*!
+    * Заменить последовательности тегов на конструкцию маркированного списка ul-li
+    *\param [in] nodes - дочерние узлы
+    */
+    void replaceSequence(QVector<QDomNode> & nodes);
 
 public:
     /*!

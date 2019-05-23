@@ -113,22 +113,26 @@ void treeHtml::repDuplicateTags(const QStringList & repTags) {
 void treeHtml::preOrder(QDomNode node) {
     QVector<QDomNode> children;
 
-    if(node.isNull() || node.isText())
-            return;
+    if(node.isNull())
+        return;
 
     qprint << node.toElement().tagName();
 
     if(node.hasChildNodes()) {
         getChildren(node, children);
-
-        for(int i = 0; i < children.length(); i++) {
-            qprint << "children " << i << ": " << children[i].toElement().tagName();
-        }
-
-        for(int i = 0; i < children.length(); i++) {
-            preOrder(children[i]);
-        }
     }
+    if(children.length() > 1) {
+        replaceSequence(children);
+    }
+
+    for(int i = 0; i < children.length(); i++) {
+        qprint << "children " << i << ": " << children[i].toElement().tagName();
+    }
+
+    for(int i = 0; i < children.length(); i++) {
+        preOrder(children[i]);
+    }
+
 
 }
 
@@ -139,9 +143,38 @@ void treeHtml::insertUL_LI(QVector<QDomNode> & duplicateList) {
 void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
     QDomNode child = node.firstChild();
 
-    while(!child.isNull()) {
+    while(!child.isNull() && !child.isText()) {
         children.append(child);
         child = child.nextSibling();
+    }
+}
+
+void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {  //!
+    QVector<QDomNode> sequence;
+
+    sequence.append(nodes[0]);
+    QString sequenceTag = nodes[0].toElement().tagName();
+
+    for(int i = 1; i < nodes.length(); i++) {
+        // если последовательность продолжается
+        if(nodes[i].toElement().tagName() == sequenceTag) {
+            sequence.append(nodes[i]);
+        } // если последовательность прервалась или не началась
+        else {
+            // если последовательность прервалась
+            if(sequence.length() > 1) {
+                insertUL_LI(sequence);
+            }
+            // начать новую последовательность
+            sequence.clear();
+            sequence.append(nodes[i]);
+            sequenceTag = nodes[i].toElement().tagName();
+        }
+    }
+
+    // если последний дочерний узел продолжает последовательность
+    if(sequence.length() > 1) {
+        insertUL_LI(sequence);
     }
 }
 
