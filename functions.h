@@ -57,7 +57,7 @@ private:
     * Исключает из пользовательского списка заменяемых тегов неподдерживаемые теги
     *\param [in] repTagsUser - пользовательский список заменяемых тегов
     */
-    void excludeUnsupportedTags(QStringList & repTagsUser);
+    void excludeUnsupportedTags(const QStringList & repTagsUser);
 
     /*!
     * Проверить подвергается ли последовательность дочерних тегов замене на констукцию ul-li

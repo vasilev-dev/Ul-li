@@ -107,8 +107,14 @@ treeHtml::treeHtml(QDomDocument & tree) {
 }
 
 void treeHtml::repDuplicateTags(const QStringList & repTagsUser) {
+    // получить узел с тегом body
+    QDomNode root = tree.elementsByTagName("body").at(0);
 
+    // получить список заменяемых тегов
+    excludeUnsupportedTags(repTagsUser);
 
+    // Обойти дерево и заменить повторяемые теги
+    preOrder(root);
 }
 
 void treeHtml::preOrder(QDomNode node) {
@@ -226,7 +232,7 @@ bool treeHtml::checkReplacableTags(const QString sequenceTag) {
     return replaceableTags.contains(sequenceTag);
 }
 
-void treeHtml::excludeUnsupportedTags(QStringList & repTagsUser) {
+void treeHtml::excludeUnsupportedTags(const QStringList & repTagsUser) {
     replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
 
     if(replaceableTags.length() < repTagsUser.length()) {
