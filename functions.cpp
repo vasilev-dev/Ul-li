@@ -107,7 +107,11 @@ treeHtml::treeHtml(QDomDocument & tree) {
 }
 
 void treeHtml::repDuplicateTags(const QStringList & repTags) {
+    QDomNode root = tree.firstChild().nextSibling();
 
+    preOrder(root);
+    qprint << "-------------------------";
+    printTree(root);
 }
 
 void treeHtml::preOrder(QDomNode node) {
@@ -126,17 +130,8 @@ void treeHtml::preOrder(QDomNode node) {
     }
 
     for(int i = 0; i < children.length(); i++) {
-        qprint << "children " << i << ": " << children[i].toElement().tagName();
-    }
-
-    for(int i = 0; i < children.length(); i++) {
         preOrder(children[i]);
     }
-
-
-}
-
-void treeHtml::insertUL_LI(QVector<QDomNode> & duplicateList) {
 
 }
 
@@ -149,7 +144,7 @@ void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
     }
 }
 
-void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {  //!
+void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {
     QVector<QDomNode> sequence;
 
     sequence.append(nodes[0]);
@@ -178,6 +173,46 @@ void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {  //!
     }
 }
 
+void treeHtml::insertUL_LI(QVector<QDomNode> & sequence) {
+    if(sequence.isEmpty()) {
+        return;
+    }
+
+    QDomNode parent = sequence[0].parentNode();
+
+    // создать тег ul
+    QDomNode ul = tree.createElement("ul");
+
+    for(int i = 0; i < sequence.length(); i++) {
+        // удалить связь узла с родителем
+        parent.removeChild(sequence[i]);
+        // добавить связь узла с ul
+        ul.appendChild(sequence[i]);
+        // заменить тег узла на li
+        sequence[i].toElement().setTagName("li");
+    }
+
+    QDomNode beforeNode = sequence[0].previousSibling();
+    // добавить связь родителя с тегом ul
+    parent.insertBefore(ul, beforeNode);
+}
+
+void treeHtml::printTree(QDomNode node) {
+    QVector<QDomNode> children;
+
+    if(node.isNull())
+        return;
+
+    qprint << node.toElement().tagName();
+
+    if(node.hasChildNodes()) {
+        getChildren(node, children);
+    }
+
+    for(int i = 0; i < children.length(); i++) {
+        preOrder(children[i]);
+    }
+}
 
 
 

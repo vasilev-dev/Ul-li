@@ -49,6 +49,8 @@ private:
     */
     void replaceSequence(QVector<QDomNode> & nodes);
 
+    void printTree(QDomNode node);
+
 public:
     /*!
     * Констуктор класса
