@@ -18,7 +18,40 @@
 #include <QQueue>
 #include <QSet>
 
-class treeHtml {
+/*!
+* Получает QString из стандартного потока ввода
+*\param [out] out - полученная строка
+*/
+void getQString(QString & out);
+
+class inputData {
+    /*!
+    * Скачивает html-разметку по URL
+    *\param [in] URL - URL-адрес для скачивания html
+    *\param [in] fullFilename - полное имя, скачиваемого html-файла
+    *\return - возвращает true, если html была успешно скачана и сохранена
+    */
+    static bool downloadHTML(const QString url, const QString fullFilename);
+
+    /*!
+    * Производит конвертацию html-разметки в xml-разметку средставами xmllint
+    * Создает файл, содержащий предупреждения и ошибки в html-разметке, в папке с исполняемым файлом
+    *\param [in] htmlFilename - полное имя html-разметки
+    *\param [in] xmlFilename - полное имя xml-разметки
+    *\return - возвращает true, если конвертация произошла успешно
+    */
+    static bool htmlToXml(const QString htmlFilename, const QString xmlFilename);
+
+    /*!
+    * Парсинг xml-разметки
+    *\param [in] xmlFilename - полное имя xml-разметки
+    *\param [out] treeHtml - дерево
+    *\return - возвращает true, если парсинг произошел успешно
+    */
+    static bool parsingXml(const QString xmlFilename, QDomDocument & tree);
+};
+
+class ulli {
 public:
     void printTree(QDomNode node);
 
@@ -26,7 +59,7 @@ public:
     * Констуктор класса
     *\param [in] tree - разметка, представленная в виде дерева
     */
-    treeHtml(QDomDocument & tree);
+    ulli(QDomDocument & tree);
 
     /*!
     * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
@@ -87,45 +120,15 @@ private:
     bool checkReplacableTags(const QString sequenceTag);
 };
 
-/*!
-* Получает QString из стандартного потока ввода
-*\param [out] out - полученная строка
-*/
-void getQString(QString & out);
+class outputData {
+    /*!
+    * Производит конвертацию xml-разметки в html-разметку средставами xmllint
+    *\param [in] xmlFilename - полное имя xml-разметки
+    *\param [in] htmlFilename - полное имя html-разметки
+    *\return - возвращает true, если конвертация произошла успешно
+    */
+    static bool xmlToHtml(const QString xmlFilename, const QString htmlFilename);
 
-/*!
-* Скачивает html-разметку по URL
-*\param [in] URL - URL-адрес для скачивания html
-*\param [in] fullFilename - полное имя, скачиваемого html-файла
-*\return - возвращает true, если html была успешно скачана и сохранена
-*/
-bool downloadHTML(const QString url, const QString fullFilename);
-
-/*!
-* Производит конвертацию html-разметки в xml-разметку средставами xmllint
-* Создает файл, содержащий предупреждения и ошибки в html-разметке, в папке с исполняемым файлом
-*\param [in] htmlFilename - полное имя html-разметки
-*\param [in] xmlFilename - полное имя xml-разметки
-*\return - возвращает true, если конвертация произошла успешно
-*/
-bool htmlToXml(const QString htmlFilename, const QString xmlFilename);
-
-/*!
-* Парсинг xml-разметки
-*\param [in] xmlFilename - полное имя xml-разметки
-*\param [out] treeHtml - дерево
-*\return - возвращает true, если парсинг произошел успешно
-*/
-bool parsingXml(const QString xmlFilename, QDomDocument & tree);
-
-/*!
-* Производит конвертацию xml-разметки в html-разметку средставами xmllint
-*\param [in] xmlFilename - полное имя xml-разметки
-*\param [in] htmlFilename - полное имя html-разметки
-*\return - возвращает true, если конвертация произошла успешно
-*/
-bool xmlToHtml(const QString xmlFilename, const QString htmlFilename);
-
-
+};
 
 #endif // FUNCTIONS_H

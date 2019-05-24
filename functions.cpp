@@ -5,7 +5,7 @@ void getQString(QString & out) {
     out = s.readLine();
 }
 
-bool downloadHTML(const QString url, const QString fullFilename) {
+bool inputData::downloadHTML(const QString url, const QString fullFilename) {
     // Загрузка html-разметки
     QNetworkAccessManager manager; // объект для запроса
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // выполняем запрос
@@ -38,7 +38,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
     return true;
 }
 
-bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
+bool inputData::htmlToXml(const QString htmlFilename, const QString xmlFilename) {
     QStringList params; // параметры для запуска xmllint
 
     params << "-html" << "-xmlout" << htmlFilename << "-output" << xmlFilename;
@@ -50,7 +50,7 @@ bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
     return true;
 }
 
-bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
+bool inputData::parsingXml(const QString xmlFilename, QDomDocument & tree) {
     QString errorMsg;
     int errorLine, errorColumn;
 
@@ -65,18 +65,6 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
                 " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn);
     }
     xml.close();
-
-    return true;
-}
-
-bool xmlToHtml(const QString xmlFilename, const QString htmlFilename) {
-    QStringList params; // параметры для запуска xmllint
-
-    params << "-html" << "-htmlout" << xmlFilename << "-output" << htmlFilename;
-
-    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
-        throw QString("function xmlToHtml: Unable to create process");
-    }
 
     return true;
 }
@@ -263,21 +251,14 @@ bool ulli::saveXml(QString xmlFilename) {
     return true;
 }
 
+bool outputData::xmlToHtml(const QString xmlFilename, const QString htmlFilename) {
+    QStringList params; // параметры для запуска xmllint
 
+    params << "-html" << "-htmlout" << xmlFilename << "-output" << htmlFilename;
 
+    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
+        throw QString("function xmlToHtml: Unable to create process");
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return true;
+}
