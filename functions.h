@@ -20,13 +20,33 @@
 
 class treeHtml {
 public:
-    QDomDocument tree; // html в виде дерева
-
     void printTree(QDomNode node);
+
+    /*!
+    * Констуктор класса
+    *\param [in] tree - разметка, представленная в виде дерева
+    */
+    treeHtml(QDomDocument & tree);
+
+    /*!
+    * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
+    *\param [in] tree - разметка, представленная в виде дерева
+    *\param [in] repTagsUser - заменяемые теги(пользовательские)
+    */
+    void repDuplicateTags(const QStringList & repTagsUser);
+
+    /*!
+    * Сохраняет дерево в формате xml
+    *\param [in] xmlFilename - разметка, представленная в виде дерева
+    *\return - возвращает true, если xml файл был сохранен
+    */
+    bool saveXml(QString xmlFilename);
 
 private:
     QStringList supportedTags;   // поддерживаемые замене на конструкцию ul-li теги
     QStringList replaceableTags; // заменяемые теги (объединение поддерживаемых и пользовательских тегов)
+
+    QDomDocument tree; // html в виде дерева
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
@@ -65,21 +85,6 @@ private:
     *\return - возвращает true, если тег последовательности может быть изменен
     */
     bool checkReplacableTags(const QString sequenceTag);
-
-public:
-    /*!
-    * Констуктор класса
-    *\param [in] tree - разметка, представленная в виде дерева
-    */
-    treeHtml(QDomDocument & tree);
-
-    /*!
-    * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
-    *\param [in] tree - разметка, представленная в виде дерева
-    *\param [in] repTagsUser - заменяемые теги(пользовательские)
-    */
-    void repDuplicateTags(const QStringList & repTagsUser);
-
 };
 
 /*!

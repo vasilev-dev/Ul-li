@@ -12,9 +12,7 @@ int main(int argc, char *argv[])
 
         treeHtml treehtml(html);
 
-        root = treehtml.tree.firstChild().nextSibling();
-
-        treehtml.preOrder(root);
+        treehtml.repDuplicateTags(QStringList());
     }
     catch(QString & err) {
         qprint << err;

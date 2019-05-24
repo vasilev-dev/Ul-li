@@ -15,7 +15,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
 
     // Если не удалось загрузить html
     if(response->error() != QNetworkReply::NoError) {
-        throw QString("function dowloadHTML: Unable to access html file at input URL.");
+        throw QString("function dowloadHTML: Unable to access html file at input URL");
     }
 
     // Поместить скачанные данные в QString
@@ -31,7 +31,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
     }
     else {
         outputHtml.close();
-        throw QString("function dowloadHTML: Unable to save file.");
+        throw QString("function dowloadHTML: Unable to save file");
     }
 
     outputHtml.close();
@@ -44,7 +44,7 @@ bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
     params << "-html" << "-xmlout" << htmlFilename << "-output" << xmlFilename;
 
     if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
-        throw QString("function htmlToXml: Process error. Perhaps in the root folder is missing \"tide.exe\".");
+        throw QString("function htmlToXml: Unable to create process");
     }
 
     return true;
@@ -57,14 +57,26 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
     // Открыть xml для чтения
     QFile xml(xmlFilename);
     if (!xml.open(QIODevice::ReadOnly))
-        throw QString("function parsingXml: Unable to open xml file.");
+        throw QString("function parsingXml: Unable to open xml file");
     // Парсинг xml
     if (!tree.setContent(&xml, &errorMsg, &errorLine, &errorColumn)) {
         xml.close();
         throw QString("function parsingXml: Unable to parsing xml file. Error message: ") + errorMsg +
-                " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn) + ".";
+                " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn);
     }
     xml.close();
+
+    return true;
+}
+
+bool xmlToHtml(const QString xmlFilename, const QString htmlFilename) {
+    QStringList params; // параметры для запуска xmllint
+
+    params << "-html" << "-htmlout" << xmlFilename << "-output" << htmlFilename;
+
+    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
+        throw QString("function xmlToHtml: Unable to create process");
+    }
 
     return true;
 }
@@ -211,6 +223,18 @@ void treeHtml::insertUL_LI(QVector<QDomNode> & sequence) {
     parent.insertBefore(ul, beforeNode);
 }
 
+bool treeHtml::checkReplacableTags(const QString sequenceTag) {
+    return replaceableTags.contains(sequenceTag);
+}
+
+void treeHtml::excludeUnsupportedTags(const QStringList & repTagsUser) {
+    replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
+
+    if(replaceableTags.length() < repTagsUser.length()) {
+        qprint << "Warning: some input tags are not supported (appendix \"A\")";
+    }
+}
+
 void treeHtml::printTree(QDomNode node) {
     QVector<QDomNode> children;
 
@@ -228,20 +252,16 @@ void treeHtml::printTree(QDomNode node) {
     }
 }
 
-bool treeHtml::checkReplacableTags(const QString sequenceTag) {
-    return replaceableTags.contains(sequenceTag);
+bool treeHtml::saveXml(QString xmlFilename) {
+    // Открыть xml для записи
+    QFile xml(xmlFilename);
+    if (!xml.open(QIODevice::WriteOnly))
+        throw QString("function saveXml: Unable to create/write xml file");
+    xml.write(tree.toByteArray());
+    xml.close();
+
+    return true;
 }
-
-void treeHtml::excludeUnsupportedTags(const QStringList & repTagsUser) {
-    replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
-
-    if(replaceableTags.length() < repTagsUser.length()) {
-        qprint << "Warning: some input tags are not supported (appendix \"A\")";
-    }
-}
-
-
-
 
 
 
