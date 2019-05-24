@@ -73,62 +73,64 @@ treeHtml::treeHtml(QDomDocument & tree) {
     this->tree = tree;
 
     // добавление поддерживаемых замене на конструкцию ul-li тегов
-    replaceableTags << "blockquote";
-    replaceableTags << "div";
-    replaceableTags << "h1";
-    replaceableTags << "h2";
-    replaceableTags << "h3";
-    replaceableTags << "h4";
-    replaceableTags << "h5";
-    replaceableTags << "h6";
-    replaceableTags << "h7";
-    replaceableTags << "p";
-    replaceableTags << "a";
-    replaceableTags << "abbr";
-    replaceableTags << "acronym";
-    replaceableTags << "h12";
-    replaceableTags << "b";
-    replaceableTags << "cite";
-    replaceableTags << "code";
-    replaceableTags << "dfn";
-    replaceableTags << "em";
-    replaceableTags << "i";
-    replaceableTags << "q";
-    replaceableTags << "s";
-    replaceableTags << "samp";
-    replaceableTags << "span";
-    replaceableTags << "strike";
-    replaceableTags << "strong";
-    replaceableTags << "sub";
-    replaceableTags << "sup";
-    replaceableTags << "textarea";
-    replaceableTags << "tt";
-    replaceableTags << "u";
+    supportedTags << "blockquote";
+    supportedTags << "div";
+    supportedTags << "h1";
+    supportedTags << "h2";
+    supportedTags << "h3";
+    supportedTags << "h4";
+    supportedTags << "h5";
+    supportedTags << "h6";
+    supportedTags << "h7";
+    supportedTags << "p";
+    supportedTags << "a";
+    supportedTags << "abbr";
+    supportedTags << "acronym";
+    supportedTags << "h12";
+    supportedTags << "b";
+    supportedTags << "cite";
+    supportedTags << "code";
+    supportedTags << "dfn";
+    supportedTags << "em";
+    supportedTags << "i";
+    supportedTags << "q";
+    supportedTags << "s";
+    supportedTags << "samp";
+    supportedTags << "span";
+    supportedTags << "strike";
+    supportedTags << "strong";
+    supportedTags << "sub";
+    supportedTags << "sup";
+    supportedTags << "textarea";
+    supportedTags << "tt";
+    supportedTags << "u";
 }
 
-void treeHtml::repDuplicateTags(const QStringList & repTags) {
-    QDomNode root = tree.firstChild().nextSibling();
+void treeHtml::repDuplicateTags(const QStringList & repTagsUser) {
 
-    preOrder(root);
-    qprint << "-------------------------";
-    printTree(root);
+
 }
 
 void treeHtml::preOrder(QDomNode node) {
-    QVector<QDomNode> children;
+    QVector<QDomNode> children; // cписок детей
 
+    // если узел нулевой то прекратить обход этого узла
     if(node.isNull())
         return;
 
     qprint << node.toElement().tagName();
 
+    // получить детей узла
     if(node.hasChildNodes()) {
         getChildren(node, children);
     }
+
+    // найти и заменить последовательности повторяющихся тегов
     if(children.length() > 1) {
         replaceSequence(children);
     }
 
+    // продолжить обход дерева
     for(int i = 0; i < children.length(); i++) {
         preOrder(children[i]);
     }
@@ -136,10 +138,16 @@ void treeHtml::preOrder(QDomNode node) {
 }
 
 void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
-    QDomNode child = node.firstChild();
+    QDomNode child = node.firstChild(); // текущий ребенок
 
-    while(!child.isNull() && !child.isText()) {
-        children.append(child);
+    // пока у узла есть дети
+    while(!child.isNull()) {
+        // если ребенок не текст
+        if(!child.isText()) {
+            // добавить ребенка в список детей
+            children.append(child);
+        }
+        // перейти к следующему ребенку
         child = child.nextSibling();
     }
 }
@@ -156,8 +164,8 @@ void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {
             sequence.append(nodes[i]);
         } // если последовательность прервалась или не началась
         else {
-            // если последовательность прервалась
-            if(sequence.length() > 1) {
+            // если последовательность прервалась и последовательность подвергается замене
+            if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
                 insertUL_LI(sequence);
             }
             // начать новую последовательность
@@ -167,8 +175,8 @@ void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {
         }
     }
 
-    // если последний дочерний узел продолжает последовательность
-    if(sequence.length() > 1) {
+    // если последний дочерний узел продолжает последовательность и последовательность подвергается замене
+    if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
         insertUL_LI(sequence);
     }
 }
@@ -214,7 +222,17 @@ void treeHtml::printTree(QDomNode node) {
     }
 }
 
+bool treeHtml::checkReplacableTags(const QString sequenceTag) {
+    return replaceableTags.contains(sequenceTag);
+}
 
+void treeHtml::excludeUnsupportedTags(QStringList & repTagsUser) {
+    replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
+
+    if(replaceableTags.length() < repTagsUser.length()) {
+        qprint << "Warning: some input tags are not supported (appendix \"A\")";
+    }
+}
 
 
 

@@ -16,25 +16,29 @@
 #include <QVector>
 #include <QList>
 #include <QQueue>
+#include <QSet>
 
 class treeHtml {
 public:
     QDomDocument tree; // html в виде дерева
 
-    /*!
-    * Рекурсивный префиксный обход дерева в глубину
-    *\param [in] node - узел дерева
-    */
-    void preOrder(QDomNode node);
+    void printTree(QDomNode node);
 
 private:
-    QStringList replaceableTags; // поддерживаемые замене на конструкцию ul-li теги
+    QStringList supportedTags;   // поддерживаемые замене на конструкцию ul-li теги
+    QStringList replaceableTags; // заменяемые теги (объединение поддерживаемых и пользовательских тегов)
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
     *\param [in] sequence - список повторяющихся тегов
     */
     void insertUL_LI(QVector<QDomNode> & sequence);
+
+    /*!
+    * Рекурсивный префиксный обход дерева в глубину
+    *\param [in] node - узел дерева
+    */
+    void preOrder(QDomNode node);
 
     /*!
     * Получить список детей узла node
@@ -49,7 +53,18 @@ private:
     */
     void replaceSequence(QVector<QDomNode> & nodes);
 
-    void printTree(QDomNode node);
+    /*!
+    * Исключает из пользовательского списка заменяемых тегов неподдерживаемые теги
+    *\param [in] repTagsUser - пользовательский список заменяемых тегов
+    */
+    void excludeUnsupportedTags(QStringList & repTagsUser);
+
+    /*!
+    * Проверить подвергается ли последовательность дочерних тегов замене на констукцию ul-li
+    *\param [in] sequenceTag - тег последовательности
+    *\return - возвращает true, если тег последовательности может быть изменен
+    */
+    bool checkReplacableTags(const QString sequenceTag);
 
 public:
     /*!
@@ -61,9 +76,9 @@ public:
     /*!
     * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
     *\param [in] tree - разметка, представленная в виде дерева
-    *\param [in] repTags - заменяемые теги
+    *\param [in] repTagsUser - заменяемые теги(пользовательские)
     */
-    void repDuplicateTags(const QStringList & repTags);
+    void repDuplicateTags(const QStringList & repTagsUser);
 
 };
 
@@ -105,5 +120,7 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 *\return - возвращает true, если конвертация произошла успешно
 */
 bool xmlToHtml(const QString xmlFilename, const QString htmlFilename);
+
+
 
 #endif // FUNCTIONS_H
