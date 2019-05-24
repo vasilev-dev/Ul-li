@@ -81,7 +81,7 @@ bool xmlToHtml(const QString xmlFilename, const QString htmlFilename) {
     return true;
 }
 
-treeHtml::treeHtml(QDomDocument & tree) {
+ulli::ulli(QDomDocument & tree) {
     this->tree = tree;
 
     // добавление поддерживаемых замене на конструкцию ul-li тегов
@@ -118,7 +118,7 @@ treeHtml::treeHtml(QDomDocument & tree) {
     supportedTags << "u";
 }
 
-void treeHtml::repDuplicateTags(const QStringList & repTagsUser) {
+void ulli::repDuplicateTags(const QStringList & repTagsUser) {
     // получить узел с тегом body
     QDomNode root = tree.elementsByTagName("body").at(0);
 
@@ -129,7 +129,7 @@ void treeHtml::repDuplicateTags(const QStringList & repTagsUser) {
     preOrder(root);
 }
 
-void treeHtml::preOrder(QDomNode node) {
+void ulli::preOrder(QDomNode node) {
     QVector<QDomNode> children; // cписок детей
 
     // если узел нулевой то прекратить обход этого узла
@@ -155,7 +155,7 @@ void treeHtml::preOrder(QDomNode node) {
 
 }
 
-void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
+void ulli::getChildren(QDomNode & node, QVector<QDomNode> & children) {
     QDomNode child = node.firstChild(); // текущий ребенок
 
     // пока у узла есть дети
@@ -170,7 +170,7 @@ void treeHtml::getChildren(QDomNode & node, QVector<QDomNode> & children) {
     }
 }
 
-void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {
+void ulli::replaceSequence(QVector<QDomNode> & nodes) {
     QVector<QDomNode> sequence;
 
     sequence.append(nodes[0]);
@@ -199,7 +199,7 @@ void treeHtml::replaceSequence(QVector<QDomNode> & nodes) {
     }
 }
 
-void treeHtml::insertUL_LI(QVector<QDomNode> & sequence) {
+void ulli::insertUL_LI(QVector<QDomNode> & sequence) {
     if(sequence.isEmpty()) {
         return;
     }
@@ -223,11 +223,11 @@ void treeHtml::insertUL_LI(QVector<QDomNode> & sequence) {
     parent.insertBefore(ul, beforeNode);
 }
 
-bool treeHtml::checkReplacableTags(const QString sequenceTag) {
+bool ulli::checkReplacableTags(const QString sequenceTag) {
     return replaceableTags.contains(sequenceTag);
 }
 
-void treeHtml::excludeUnsupportedTags(const QStringList & repTagsUser) {
+void ulli::excludeUnsupportedTags(const QStringList & repTagsUser) {
     replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
 
     if(replaceableTags.length() < repTagsUser.length()) {
@@ -235,7 +235,7 @@ void treeHtml::excludeUnsupportedTags(const QStringList & repTagsUser) {
     }
 }
 
-void treeHtml::printTree(QDomNode node) {
+void ulli::printTree(QDomNode node) {
     QVector<QDomNode> children;
 
     if(node.isNull())
@@ -252,7 +252,7 @@ void treeHtml::printTree(QDomNode node) {
     }
 }
 
-bool treeHtml::saveXml(QString xmlFilename) {
+bool ulli::saveXml(QString xmlFilename) {
     // Открыть xml для записи
     QFile xml(xmlFilename);
     if (!xml.open(QIODevice::WriteOnly))
