@@ -5,7 +5,7 @@ void getQString(QString & out) {
     out = s.readLine();
 }
 
-bool downloadHTML(const QString url, const QString fullFilename) {
+bool inputData::downloadHTML(const QString url, const QString fullFilename) {
     // Загрузка html-разметки
     QNetworkAccessManager manager; // объект для запроса
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // выполняем запрос
@@ -15,7 +15,7 @@ bool downloadHTML(const QString url, const QString fullFilename) {
 
     // Если не удалось загрузить html
     if(response->error() != QNetworkReply::NoError) {
-        throw QString("function dowloadHTML: Unable to access html file at input URL.");
+        throw QString("function dowloadHTML: Unable to access html file at input URL");
     }
 
     // Поместить скачанные данные в QString
@@ -31,38 +31,38 @@ bool downloadHTML(const QString url, const QString fullFilename) {
     }
     else {
         outputHtml.close();
-        throw QString("function dowloadHTML: Unable to save file.");
+        throw QString("function dowloadHTML: Unable to save file");
     }
 
     outputHtml.close();
     return true;
 }
 
-bool htmlToXml(const QString htmlFilename, const QString xmlFilename) {
+bool inputData::htmlToXml(const QString htmlFilename, const QString xmlFilename) {
     QStringList params; // параметры для запуска xmllint
 
     params << "-html" << "-xmlout" << htmlFilename << "-output" << xmlFilename;
 
     if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
-        throw QString("function htmlToXml: Process error. Perhaps in the root folder is missing \"tide.exe\".");
+        throw QString("function htmlToXml: Unable to create process");
     }
 
     return true;
 }
 
-bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
+bool inputData::parsingXml(const QString xmlFilename, QDomDocument & tree) {
     QString errorMsg;
     int errorLine, errorColumn;
 
     // Открыть xml для чтения
     QFile xml(xmlFilename);
     if (!xml.open(QIODevice::ReadOnly))
-        throw QString("function parsingXml: Unable to open xml file.");
+        throw QString("function parsingXml: Unable to open xml file");
     // Парсинг xml
     if (!tree.setContent(&xml, &errorMsg, &errorLine, &errorColumn)) {
         xml.close();
         throw QString("function parsingXml: Unable to parsing xml file. Error message: ") + errorMsg +
-                " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn) + ".";
+                " from line " + QString::number(errorLine) + ", column " + QString::number(errorColumn);
     }
     xml.close();
 
@@ -70,137 +70,207 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
 }
 
 void treeHtml::repDuplicateTags(const QStringList & repTags) {
-<<<<<<< HEAD
     // заполнить этажи соседями
     getNeighbors();
+bool inputData::handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile) {
 
-    // для всех этажей, начиная от самого нижнего
-    for(int i = levels.length() - 1; i >= 0 ; i--) {
-
-        QVector<QDomNode> duplicateList; // список повторяющихся тегов
-        QString tag = ""; // тег текущей последовательности
-
-        // для всех элементов на этаже
-        for(int j = 0; j < levels[i].length(); j++) {
-            // если последовательность тегов продолжается то
-            if(levels[i][j].toElement().tagName() == tag) {
-                // добавить элемент в список повторяющихся тегов
-                duplicateList.append(levels[i][j]);
-            }
-            else if(duplicateList.length() > 0) { // иначе, если последовательсть прервалась
-                // заменить последовательность на конструкцию ul-li
-                //insertUL_LI(duplicateList);
-                // обнулить список повторяющихся тегов
-                duplicateList.clear();
-                // начать новую последовательность
-                tag = levels[i][j].toElement().tagName();
-                duplicateList.append(levels[i][j]);
-            }
-            else { // иначе, если последовательность не образовалась
-                // обнулить список повторяющихся тегов
-                duplicateList.clear();
-                // начать новую последовательность
-                tag = levels[i][j].toElement().tagName();
-            }
-        }
-    }
 }
 
-void treeHtml::getNeighbors() {
+ulli::ulli(QDomDocument & tree) {
+    this->tree = tree;
+
+    // добавление поддерживаемых замене на конструкцию ul-li тегов
+    supportedTags << "blockquote";
+    supportedTags << "div";
+    supportedTags << "h1";
+    supportedTags << "h2";
+    supportedTags << "h3";
+    supportedTags << "h4";
+    supportedTags << "h5";
+    supportedTags << "h6";
+    supportedTags << "h7";
+    supportedTags << "p";
+    supportedTags << "a";
+    supportedTags << "abbr";
+    supportedTags << "acronym";
+    supportedTags << "h12";
+    supportedTags << "b";
+    supportedTags << "cite";
+    supportedTags << "code";
+    supportedTags << "dfn";
+    supportedTags << "em";
+    supportedTags << "i";
+    supportedTags << "q";
+    supportedTags << "s";
+    supportedTags << "samp";
+    supportedTags << "span";
+    supportedTags << "strike";
+    supportedTags << "strong";
+    supportedTags << "sub";
+    supportedTags << "sup";
+    supportedTags << "textarea";
+    supportedTags << "tt";
+    supportedTags << "u";
+}
+
+void ulli::repDuplicateTags(const QStringList & repTagsUser) {
+    // получить узел с тегом body
+    QDomNode root = tree.elementsByTagName("body").at(0);
 
     QDomNode currentNode = tree.firstChild();
     QQueue<QDomNode> currentLevel;
     QQueue<QDomNode> childs;
     uint countLevels = 0;
-=======
->>>>>>> b33c59a3ca81ccc58d0182150dffe284da7fa1bc
 
+    // получить список заменяемых тегов
+    excludeUnsupportedTags(repTagsUser);
+
+    // Обойти дерево и заменить повторяемые теги
+    preOrder(root);
 }
 
-void treeHtml::preOrder(QDomNode & node) {
-    QQueue<QDomNode*> childrenNodes;
-    QDomNode * curNode;
+void ulli::preOrder(QDomNode node) {
+    QVector<QDomNode> children; // cписок детей
 
-    if(node.isNull() || node.isText())
+    // если узел нулевой то прекратить обход этого узла
+    if(node.isNull())
         return;
 
     qprint << node.toElement().tagName();
 
-    getChildren(node, childrenNodes);
-    for(int i = 0; i < childrenNodes.length(); i++) {
-        curNode = childrenNodes.dequeue();
-        preOrder(*curNode);
+    // получить детей узла
+    if(node.hasChildNodes()) {
+        getChildren(node, children);
+    }
+
+    // найти и заменить последовательности повторяющихся тегов
+    if(children.length() > 1) {
+        replaceSequence(children);
+    }
+
+    // продолжить обход дерева
+    for(int i = 0; i < children.length(); i++) {
+        preOrder(children[i]);
+    }
+
+}
+
+void ulli::getChildren(QDomNode & node, QVector<QDomNode> & children) {
+    QDomNode child = node.firstChild(); // текущий ребенок
+
+    // пока у узла есть дети
+    while(!child.isNull()) {
+        // если ребенок не текст
+        if(!child.isText()) {
+            // добавить ребенка в список детей
+            children.append(child);
+        }
+        // перейти к следующему ребенку
+        child = child.nextSibling();
     }
 }
 
-void treeHtml::getChildren(QDomNode & node, QQueue<QDomNode *> & children) {
-    QDomNode * curChild = new QDomNode();
-    // если у узла есть дети
-    if(node.hasChildNodes()) {
-        // добавить в очередь первого ребенка
-        curChild = &(node.firstChild());
-        children.enqueue(curChild);
+void ulli::replaceSequence(QVector<QDomNode> & nodes) {
+    QVector<QDomNode> sequence;
 
-        //пока есть дети
-        while(!curChild->nextSibling().isNull()) {
-            curChild = curChild->nextSibling();
-            children.enqueue(curChild);
+    sequence.append(nodes[0]);
+    QString sequenceTag = nodes[0].toElement().tagName();
+
+    for(int i = 1; i < nodes.length(); i++) {
+        // если последовательность продолжается
+        if(nodes[i].toElement().tagName() == sequenceTag) {
+            sequence.append(nodes[i]);
+        } // если последовательность прервалась или не началась
+        else {
+            // если последовательность прервалась и последовательность подвергается замене
+            if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
+                insertUL_LI(sequence);
+            }
+            // начать новую последовательность
+            sequence.clear();
+            sequence.append(nodes[i]);
+            sequenceTag = nodes[i].toElement().tagName();
         }
     }
+
+    // если последний дочерний узел продолжает последовательность и последовательность подвергается замене
+    if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
+        insertUL_LI(sequence);
+    }
 }
 
-
-void treeHtml::insertUL_LI(QVector<QDomNode> duplicateList) {
-    // получить родителя
-    QDomNode parent = duplicateList[0].parentNode();
-
-    // удалить связь родителя с повторяющися тегами
-    for(int i = 0; i < duplicateList.length(); i++) {
-        parent.removeChild(duplicateList[i]);
+void ulli::insertUL_LI(QVector<QDomNode> & sequence) {
+    if(sequence.isEmpty()) {
+        return;
     }
+
+    QDomNode parent = sequence[0].parentNode();
 
     // создать тег ul
-    QDomElement ul;
-    ul.setTagName("ul");
+    QDomNode ul = tree.createElement("ul");
 
-    // вставляем тег ul
-    parent.appendChild(ul);
-
-    // заменить повторяющиеся теги на li
-    for(int i = 0; i < duplicateList.length(); i++) {
-        QDomElement li = duplicateList[i].toElement();
-        li.setTagName("li");
-        duplicateList[i] = li;
+    for(int i = 0; i < sequence.length(); i++) {
+        // удалить связь узла с родителем
+        parent.removeChild(sequence[i]);
+        // добавить связь узла с ul
+        ul.appendChild(sequence[i]);
+        // заменить тег узла на li
+        sequence[i].toElement().setTagName("li");
     }
 
-    // сделать ul родителем тегов li
-    for(int i = 0; i < duplicateList.length(); i++) {
+    QDomNode beforeNode = sequence[0].previousSibling();
+    // добавить связь родителя с тегом ul
+    parent.insertBefore(ul, beforeNode);
+}
 
+bool ulli::checkReplacableTags(const QString sequenceTag) {
+    return replaceableTags.contains(sequenceTag);
+}
+
+void ulli::excludeUnsupportedTags(const QStringList & repTagsUser) {
+    replaceableTags = (QSet<QString>::fromList(supportedTags) & QSet<QString>::fromList(repTagsUser)).toList();
+
+    if(replaceableTags.length() < repTagsUser.length()) {
+        qprint << "Warning: some input tags are not supported (appendix \"A\")";
     }
 }
 
+void ulli::printTree(QDomNode node) {
+    QVector<QDomNode> children;
 
+    if(node.isNull())
+        return;
 
+    qprint << node.toElement().tagName();
 
+    if(node.hasChildNodes()) {
+        getChildren(node, children);
+    }
 
+    for(int i = 0; i < children.length(); i++) {
+        preOrder(children[i]);
+    }
+}
 
+bool ulli::saveXml(QString xmlFilename) {
+    // Открыть xml для записи
+    QFile xml(xmlFilename);
+    if (!xml.open(QIODevice::WriteOnly))
+        throw QString("function saveXml: Unable to create/write xml file");
+    xml.write(tree.toByteArray());
+    xml.close();
 
+    return true;
+}
 
+bool outputData::xmlToHtml(const QString xmlFilename, const QString htmlFilename) {
+    QStringList params; // параметры для запуска xmllint
 
+    params << "-html" << "-htmlout" << xmlFilename << "-output" << htmlFilename;
 
+    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
+        throw QString("function xmlToHtml: Unable to create process");
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return true;
+}
