@@ -69,9 +69,6 @@ bool inputData::parsingXml(const QString xmlFilename, QDomDocument & tree) {
     return true;
 }
 
-void treeHtml::repDuplicateTags(const QStringList & repTags) {
-    // заполнить этажи соседями
-    getNeighbors();
 bool inputData::handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile) {
 
 }
@@ -116,11 +113,6 @@ ulli::ulli(QDomDocument & tree) {
 void ulli::repDuplicateTags(const QStringList & repTagsUser) {
     // получить узел с тегом body
     QDomNode root = tree.elementsByTagName("body").at(0);
-
-    QDomNode currentNode = tree.firstChild();
-    QQueue<QDomNode> currentLevel;
-    QQueue<QDomNode> childs;
-    uint countLevels = 0;
 
     // получить список заменяемых тегов
     excludeUnsupportedTags(repTagsUser);
