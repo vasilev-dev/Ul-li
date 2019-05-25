@@ -4,21 +4,17 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    /* Проверка версии SSL
-    qDebug()<<"SSL version use for build: "<<QSslSocket::sslLibraryBuildVersionString();
-    qDebug()<<"SSL version use for run-time: "<<QSslSocket::sslLibraryVersionNumber();
-    qDebug()<<QCoreApplication::libraryPaths();*/
+    treeHtml html;
 
-    QString test("qwerty");
-    test += 123;
-    qDebug() << test;
+    try {
+        parsingXml("example.html", html.tree);
+    }
+    catch(QString & err) {
+        qprint << err;
+    }
 
-    try{
-        downloadHTML("123", "123");
-    }
-    catch(QString error) {
-        qDebug() << error;
-    }
+    QDomNode root = html.tree.firstChild().nextSibling();
+    html.preOrder(root);
 
     return a.exec();
 }

@@ -70,6 +70,7 @@ bool parsingXml(const QString xmlFilename, QDomDocument & tree) {
 }
 
 void treeHtml::repDuplicateTags(const QStringList & repTags) {
+<<<<<<< HEAD
     // заполнить этажи соседями
     getNeighbors();
 
@@ -111,93 +112,72 @@ void treeHtml::getNeighbors() {
     QQueue<QDomNode> currentLevel;
     QQueue<QDomNode> childs;
     uint countLevels = 0;
-
-    // Добавить первый этаж в очередь
-    while(!currentNode.isNull()) {
-        currentLevel.enqueue(currentNode);
-        currentNode = currentNode.nextSibling();
-    }
-
-    // Пока все этажы дерева не пройдены
-    while(!currentLevel.isEmpty()) {
-
-        QVector<QDomNode> nodes;
-
-        // Добавить всех детей текущего уровня в очередь
-        while(!currentLevel.isEmpty()) {
-            currentNode = currentLevel.dequeue();
-            if(currentNode.isElement()) {
-                nodes.append(currentNode);
-            }
-            getChilds(currentNode, childs);
-        }
-
-        // Перейти на следующий этаж
-        currentLevel = childs;
-        childs.clear();
-        countLevels++;
-
-        if(!nodes.isEmpty()) {
-            levels.append(nodes);
-        }
-    }
-
+=======
+>>>>>>> b33c59a3ca81ccc58d0182150dffe284da7fa1bc
 
 }
 
-/*
-void treeHtml::bfs(QDomNode & node) {
-    QDomNode currentNode = node;
-    QQueue<QDomNode> currentLevel;
-    QQueue<QDomNode> childs;
-    uint countLevels = 0;
+void treeHtml::preOrder(QDomNode & node) {
+    QQueue<QDomNode*> childrenNodes;
+    QDomNode * curNode;
 
-    // Добавить первый этаж в очередь
-    while(!currentNode.isNull()) {
-        currentLevel.enqueue(currentNode);
-        currentNode = currentNode.nextSibling();
+    if(node.isNull() || node.isText())
+        return;
+
+    qprint << node.toElement().tagName();
+
+    getChildren(node, childrenNodes);
+    for(int i = 0; i < childrenNodes.length(); i++) {
+        curNode = childrenNodes.dequeue();
+        preOrder(*curNode);
     }
+}
 
-    // Пока все этажы дерева не пройдены
-    while(!currentLevel.isEmpty()) {
+void treeHtml::getChildren(QDomNode & node, QQueue<QDomNode *> & children) {
+    QDomNode * curChild = new QDomNode();
+    // если у узла есть дети
+    if(node.hasChildNodes()) {
+        // добавить в очередь первого ребенка
+        curChild = &(node.firstChild());
+        children.enqueue(curChild);
 
-        qprint << "Level: " + QString::number(countLevels);
-
-        // Добавить всех детей текущего уровня в очередь
-        while(!currentLevel.isEmpty()) {
-            currentNode = currentLevel.dequeue();
-            if(currentNode.isElement()) {
-                qprint << "   " +currentNode.toElement().tagName();
-            }
-            getChilds(currentNode, childs);
-        }
-
-        // Перейти на следующий этаж
-        currentLevel = childs;
-        childs.clear();
-        countLevels++;
-    }
-}*/
-
-void treeHtml::getChilds(QDomNode &node, QQueue<QDomNode> & childs) {
-    // Получить первого ребенка
-    QDomNode currentChild = node.firstChild();
-
-    // Если у входного узла есть дети
-    if(!currentChild.isNull()) {
-        // Добавить первого ребенка в очередь
-        childs.enqueue(currentChild);
-
-        // Пока у текущего ребенка есть братья
-        while(!currentChild.nextSibling().isNull()) {
-            // Перейти к следущему ребенку
-            currentChild = currentChild.nextSibling();
-            // Добавить ребенка в очередь
-            childs.enqueue(currentChild);
+        //пока есть дети
+        while(!curChild->nextSibling().isNull()) {
+            curChild = curChild->nextSibling();
+            children.enqueue(curChild);
         }
     }
 }
 
+
+void treeHtml::insertUL_LI(QVector<QDomNode> duplicateList) {
+    // получить родителя
+    QDomNode parent = duplicateList[0].parentNode();
+
+    // удалить связь родителя с повторяющися тегами
+    for(int i = 0; i < duplicateList.length(); i++) {
+        parent.removeChild(duplicateList[i]);
+    }
+
+    // создать тег ul
+    QDomElement ul;
+    ul.setTagName("ul");
+
+    // вставляем тег ul
+    parent.appendChild(ul);
+
+    // заменить повторяющиеся теги на li
+    for(int i = 0; i < duplicateList.length(); i++) {
+        QDomElement li = duplicateList[i].toElement();
+        li.setTagName("li");
+        duplicateList[i] = li;
+    }
+
+    // сделать ul родителем тегов li
+    for(int i = 0; i < duplicateList.length(); i++) {
+
+    }
+}
 
 
 
