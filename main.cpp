@@ -4,20 +4,33 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QDomDocument html;
-    QDomNode root;
+    // -url
+    QString url = "file:///C:/QtProjects/UL_LI/testing/example.html";
+    QString downloadPath = "testing/example.html";
 
-    try {
-        parsingXml("example.html", html);
+    // -input
+    QString inputFile = "testing/example.html";
 
-        treeHtml treehtml(html);
+    // -output
+    QString ouputFile = "testing/example2.html";
 
-        treehtml.repDuplicateTags(QStringList());
-    }
-    catch(QString & err) {
-        qprint << err;
-    }
+    // -tags
+    QString fileWithTags = "";
 
+    QStringList tags;
+    tags << "p";
+
+    QDomDocument tree;
+
+    inputData::downloadHTML(url, downloadPath);
+    inputData::htmlToXml(inputFile, ouputFile);
+    inputData::parsingXml(ouputFile, tree);
+
+    ulli html(tree);
+    html.repDuplicateTags(tags);
+    html.saveXml(ouputFile);
+
+    outputData::xmlToHtml(ouputFile, ouputFile);
 
     return a.exec();
 }

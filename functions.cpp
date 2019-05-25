@@ -69,6 +69,10 @@ bool inputData::parsingXml(const QString xmlFilename, QDomDocument & tree) {
     return true;
 }
 
+bool inputData::handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile) {
+
+}
+
 ulli::ulli(QDomDocument & tree) {
     this->tree = tree;
 

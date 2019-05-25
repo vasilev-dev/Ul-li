@@ -25,6 +25,7 @@
 void getQString(QString & out);
 
 class inputData {
+public:
     /*!
     * Скачивает html-разметку по URL
     *\param [in] URL - URL-адрес для скачивания html
@@ -49,6 +50,18 @@ class inputData {
     *\return - возвращает true, если парсинг произошел успешно
     */
     static bool parsingXml(const QString xmlFilename, QDomDocument & tree);
+
+    /*!
+    * Обработать параметры командной строки
+    *\param [in] argc - количество аргументов командной строки
+    *\param [in] argv - аргументы командной строки
+    *\param [out] url - url-адрес
+    *\param [out] downloadFilename - имя скачиваемого файла
+    *\param [out] inputFile - имя входного файла
+    *\param [out] outputFile - имя выходного файла
+    *\return - возвращает true, если все входные данные успешно обработаны
+    */
+    static bool handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile);
 };
 
 class ulli {
@@ -121,6 +134,7 @@ private:
 };
 
 class outputData {
+public:
     /*!
     * Производит конвертацию xml-разметки в html-разметку средставами xmllint
     *\param [in] xmlFilename - полное имя xml-разметки
