@@ -69,7 +69,7 @@ bool inputData::parsingXml(const QString xmlFilename, QDomDocument & tree) {
     return true;
 }
 
-bool inputData::handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile) {
+bool inputData::handlerCmdParams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile) {
 
 }
 
@@ -113,6 +113,10 @@ ulli::ulli(QDomDocument & tree) {
 void ulli::repDuplicateTags(const QStringList & repTagsUser) {
     // получить узел с тегом body
     QDomNode root = tree.elementsByTagName("body").at(0);
+
+    if(root.isNull()) {
+        throw QString("No html markup body found");
+    }
 
     // получить список заменяемых тегов
     excludeUnsupportedTags(repTagsUser);
@@ -175,7 +179,7 @@ void ulli::replaceSequence(QVector<QDomNode> & nodes) {
         } // если последовательность прервалась или не началась
         else {
             // если последовательность прервалась и последовательность подвергается замене
-            if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
+            if(sequence.length() > 1 && checkReplaceableTags(sequenceTag)) {
                 insertUL_LI(sequence);
             }
             // начать новую последовательность
@@ -186,7 +190,7 @@ void ulli::replaceSequence(QVector<QDomNode> & nodes) {
     }
 
     // если последний дочерний узел продолжает последовательность и последовательность подвергается замене
-    if(sequence.length() > 1 && checkReplacableTags(sequenceTag)) {
+    if(sequence.length() > 1 && checkReplaceableTags(sequenceTag)) {
         insertUL_LI(sequence);
     }
 }
@@ -215,7 +219,7 @@ void ulli::insertUL_LI(QVector<QDomNode> & sequence) {
     parent.insertBefore(ul, beforeNode);
 }
 
-bool ulli::checkReplacableTags(const QString sequenceTag) {
+bool ulli::checkReplaceableTags(const QString sequenceTag) {
     return replaceableTags.contains(sequenceTag);
 }
 

@@ -52,7 +52,7 @@ public:
     static bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 
     /*!
-    * Обработать параметры командной строки
+    * Обработать аргументы командной строки
     *\param [in] argc - количество аргументов командной строки
     *\param [in] argv - аргументы командной строки
     *\param [out] url - url-адрес
@@ -61,7 +61,7 @@ public:
     *\param [out] outputFile - имя выходного файла
     *\return - возвращает true, если все входные данные успешно обработаны
     */
-    static bool handlerCmdPatams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile);
+    static bool handlerCmdParams(int argc, char *argv[], QString & url, QString & downloadFilename, QString & inputFile, QString & outputFile);
 };
 
 class ulli {
@@ -130,7 +130,7 @@ private:
     *\param [in] sequenceTag - тег последовательности
     *\return - возвращает true, если тег последовательности может быть изменен
     */
-    bool checkReplacableTags(const QString sequenceTag);
+    bool checkReplaceableTags(const QString sequenceTag);
 };
 
 class outputData {
