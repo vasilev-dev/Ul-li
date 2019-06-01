@@ -5,10 +5,13 @@ void getQString(QString & out) {
     out = s.readLine();
 }
 
-bool inputData::downloadHTML(const QString url, const QString fullFilename) {
+bool inputData::getHtml(const QString openFrom, const QString outputFilename) {
+    QUrl url(openFrom);
+    url.toLocalFile();
+
     // Загрузка html-разметки
     QNetworkAccessManager manager; // объект для запроса
-    QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url))); // выполняем запрос
+    QNetworkReply *response = manager.get(QNetworkRequest(url)); // выполняем запрос
     QEventLoop event;
     QObject::connect(response,SIGNAL(finished()),&event,SLOT(quit())); // сигнал загрузки
     event.exec();
@@ -22,7 +25,7 @@ bool inputData::downloadHTML(const QString url, const QString fullFilename) {
     QString html = response->readAll();
 
     // Cохранение html
-    QFile outputHtml(fullFilename);
+    QFile outputHtml(outputFilename);
 
     // Если удалось открыть файл для записи
     if(outputHtml.open(QIODevice::WriteOnly)) {

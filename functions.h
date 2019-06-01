@@ -27,12 +27,12 @@ void getQString(QString & out);
 class inputData {
 public:
     /*!
-    * Скачивает html-разметку по URL
-    *\param [in] URL - URL-адрес для скачивания html
-    *\param [in] fullFilename - полное имя, скачиваемого html-файла
+    * Получает html-разметку
+    *\param [in] openFrom - имя файла на компьютере или URL-адрес для скачивания html
+    *\param [in] outputFilename - имя, сохраняемого html-файла
     *\return - возвращает true, если html была успешно скачана и сохранена
     */
-    static bool downloadHTML(const QString url, const QString fullFilename);
+    static bool getHtml(const QString openFrom, const QString outputFilename);
 
     /*!
     * Производит конвертацию html-разметки в xml-разметку средставами xmllint
