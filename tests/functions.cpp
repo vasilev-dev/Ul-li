@@ -302,16 +302,14 @@ bool OutputData::removeXmllintHeader(const QString htmlFilename) {
     QFile out(htmlFilename);
 
     QString html;
-    int lengthXmllintHeader;
-
+    const int lengthXmllintHeader = 146;
 
     if (!in.open(QIODevice::ReadWrite | QIODevice::Text)) {
         throw QString("functions removeXmllintHeader: Unable to open html file");
     }
 
     html = in.readAll();
-    html.remove(0, html.indexOf("\n") + 1);
-    html.remove(0, html.indexOf("\n") + 1);
+    html.remove(0, lengthXmllintHeader);
 
     in.close();
 
