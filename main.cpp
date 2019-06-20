@@ -19,11 +19,12 @@ int main(int argc, char *argv[])
         ulli.saveXml(outputFile);
 
         OutputData::xmlToHtml(outputFile, outputFile);
-        OutputData::removeXmllintHeader(outputFile);
+        OutputData::removeXmlHeader(outputFile);
 
     } catch (QString err) {
         qprint << err;
+        exit(-1);
     }
 
-    return a.exec();
+    return 0;
 }

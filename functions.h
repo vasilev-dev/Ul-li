@@ -1,7 +1,17 @@
 ﻿#ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+/*!
+\file
+\brief Заголовочный файл с описанием всех функций программы
+
+Данный файл содержит в себе описание всех функций программы
+*/
+
+/*!cout-пободный вывод в консоль*/
 #define qprint qDebug().nospace().noquote()
+
+/*!Число аргументов командной строки для запуска программы*/
 #define CORRECT_NUMBER_ARGS 5
 
 #include <iostream>
@@ -38,8 +48,10 @@ class InputData {
 public:
     /*!
     * Конструктор класса - заполняет поддерживаемые аргументы командной строки
-    * param [in] argc - количество аргументов командной строки
+    *\param [in] argc - количество аргументов командной строки
     *\param [in] argv - параментры командной строки
+	*\exception QString - Incorrect number of arguments to run programm(define CORRECT_NUMBER_ARGS)
+	*\exception QString - Unknown flag
     */
     InputData(int argc, char *argv[]);
 
@@ -48,6 +60,8 @@ public:
     *\param [in] openFrom - имя файла на компьютере или URL-адрес для скачивания html
     *\param [in] outputFilename - имя, сохраняемого html-файла
     *\return - возвращает true, если html была успешно скачана и сохранена
+	*\exception QString - Unable to access html file at input URL
+	*\exception QString - Unable to save file
     */
     static bool getHtml(const QString openFrom, const QString outputFilename);
 
@@ -56,6 +70,7 @@ public:
     *\param [in] htmlFilename - полное имя html-разметки
     *\param [in] xmlFilename - полное имя xml-разметки
     *\return - возвращает true, если конвертация произошла успешно
+	*\exception QString - Unable to convert html to xml
     */
     static bool htmlToXml(const QString htmlFilename, const QString xmlFilename);
 
@@ -64,6 +79,8 @@ public:
     *\param [in] xmlFilename - полное имя xml-разметки
     *\param [out] tree - дерево
     *\return - возвращает true, если парсинг произошел успешно
+	*\exception QString - Unable to open xml file
+	*\exception QString - Unable to parsing xml file. Error message
     */
     static bool parsingXml(const QString xmlFilename, QDomDocument & tree);
 
@@ -76,8 +93,8 @@ public:
     QString getFlagValue(const QString flag);
 
 private:
-    QMap<QString, QString> params; // параметры командной строки
-    QStringList supportedParams;   // поддерживаемые аргументы командной строки
+    QMap<QString, QString> params; //!<параметры командной строки
+    QStringList supportedParams;   //!<поддерживаемые аргументы командной строки
 };
 
 class Ulli {
@@ -90,6 +107,7 @@ public:
 
     /*!
     * Заменяет повторяющие теги в html-разметке на конструкцию маркированного списка ul-li
+	*\brief Выдает предупреждение, если пользовательский тег является неподдерживаемым
     *\param [in] tree - разметка, представленная в виде дерева
     */
     void repDuplicateTags();
@@ -98,18 +116,19 @@ public:
     * Сохраняет дерево в формате xml
     *\param [in] xmlFilename - разметка, представленная в виде дерева
     *\return - возвращает true, если xml файл был сохранен
+	*\exception QString - Unable to create/write xml file
     */
     bool saveXml(QString xmlFilename);
 
 private:
-    QStringList supportedTags;       // поддерживаемые замене на конструкцию ul-li теги
-    QStringList replaceableUserTags; // пользовательские заменяемые теги
-    QStringList replaceableTags;     // заменяемые теги (объединение поддерживаемых и пользовательских тегов)
+    QStringList supportedTags;       //!<поддерживаемые замене на конструкцию ul-li теги
+    QStringList replaceableUserTags; //!<пользовательские заменяемые теги
+    QStringList replaceableTags;     //!<заменяемые теги (объединение поддерживаемых и пользовательских тегов)
 
-    const QString supportedTagsFilename = "supportedTags.txt"; // имя файла с поддерживаемыми
-    const QString userTagsFilename = "userTags.txt";           // имя файла с пользовательскими заменяемыми тегами
+    const QString supportedTagsFilename = "supportedTags.txt"; //!<имя файла с поддерживаемыми тегами
+    const QString userTagsFilename = "userTags.txt";           //!<имя файла с пользовательскими заменяемыми тегами
 
-    QDomDocument tree; // html в виде дерева
+    QDomDocument tree; //!<html в виде дерева
 
     /*!
     * Вставить конструкцию маркированного списка ul-li (проверка одноуровенности тегов не осуществяется)
@@ -153,6 +172,7 @@ private:
     *\param [in] filename - файл с тегами
     *\param [out] tags - теги из файла
     *\return - возвращает false, если не удается открыть файл с пользовательскими тегами
+	*\exception QString - Unable to open file with tags
     */
     bool getListOfTags(const QString filename, QStringList & tags);
 };
@@ -164,6 +184,7 @@ public:
     *\param [in] xmlFilename - полное имя xml-разметки
     *\param [in] htmlFilename - полное имя html-разметки
     *\return - возвращает true, если конвертация произошла успешно
+	*\exception QString - Bad exit process status
     */
     static bool xmlToHtml(const QString xmlFilename, const QString htmlFilename);
 
@@ -171,8 +192,9 @@ public:
     * Удаляет из разметки автоматически сгенерированную xmllint шапку
     *\param [in] htmlFilename - полное имя xml-разметки
     *\return - возвращает false, если не удается открыть файл
+	*\exception QString - Unable to open html file
     */
-    static bool removeXmllintHeader(const QString htmlFilename);
+    static bool removeXmlHeader(const QString htmlFilename);
 };
 
 #endif // FUNCTIONS_H

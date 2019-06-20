@@ -1,9 +1,4 @@
-﻿#include "functions.h"
-
-void getQString(QString & out) {
-    QTextStream s(stdin);
-    out = s.readLine();
-}
+﻿#include <functions.h>
 
 void windows1251ToUnicode(QByteArray & inputData, QString & string) {
     QTextCodec * defaultTextCodec = QTextCodec::codecForName("Windows-1251");
@@ -38,7 +33,7 @@ bool InputData::getHtml(const QString openFrom, const QString outputFilename) {
     // если html-разметка разположена на компьютере то
     if(!(openFrom.contains("http://") || openFrom.contains("https://"))) {
         // преобразовать url в локальный
-        url = QUrl::fromLocalFile(openFrom);
+        url = QUrl::fromLocalFile(QDir().absoluteFilePath(openFrom));
     }
 
     // Загрузка html-разметки
@@ -54,10 +49,10 @@ bool InputData::getHtml(const QString openFrom, const QString outputFilename) {
     }
 
     // Получить html в виде строки
-    //htmlBa = response->readAll();
-    //windows1251ToUnicode(htmlBa, html);
+    htmlBa = response->readAll();
+    windows1251ToUnicode(htmlBa, html);
 
-    html = response->readAll();
+    //html = response->readAll();
 
     // Cохранение html
     QFile outputHtml(outputFilename);
@@ -65,7 +60,7 @@ bool InputData::getHtml(const QString openFrom, const QString outputFilename) {
     // Если удалось открыть файл для записи
     if(outputHtml.open(QIODevice::WriteOnly)) {
         QTextStream out(&outputHtml);
-        out << html;
+        out << html.toUtf8();
         out.flush();
     }
     else {
@@ -84,7 +79,7 @@ bool InputData::htmlToXml(const QString htmlFilename, const QString xmlFilename)
     params << "-html" << "-xmlout" << htmlFilename << "-output" << xmlFilename;
 
     if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
-        throw QString("function htmlToXml: Unable to create process");
+        throw QString("function htmlToXml: Unable to convert html to xml");
     }
 
     return true;
@@ -131,7 +126,8 @@ void Ulli::repDuplicateTags() {
     QDomNode root = tree.elementsByTagName("body").at(0);
 
     if(root.isNull()) {
-        throw QString("No html markup body found");
+        qprint << "function repDuplicateTags: Warning: tag body not found";
+        return;
     }
 
     // Обойти дерево и заменить повторяемые теги
@@ -178,6 +174,10 @@ void Ulli::getChildren(QDomNode & node, QVector<QDomNode> & children) {
 }
 
 void Ulli::replaceSequence(QVector<QDomNode> & nodes) {
+    if(nodes.isEmpty()) {
+        return;
+    }
+
     QVector<QDomNode> sequence;
 
     sequence.append(nodes[0]);
@@ -212,6 +212,7 @@ void Ulli::insertUL_LI(QVector<QDomNode> & sequence) {
     }
 
     QDomNode parent = sequence[0].parentNode();
+    QDomNode beforeNode = sequence[0].previousSibling();
 
     // создать тег ul
     QDomNode ul = tree.createElement("ul");
@@ -225,9 +226,13 @@ void Ulli::insertUL_LI(QVector<QDomNode> & sequence) {
         sequence[i].toElement().setTagName("li");
     }
 
-    QDomNode beforeNode = sequence[0].previousSibling();
     // добавить связь родителя с тегом ul
-    parent.insertBefore(ul, beforeNode);
+    if(beforeNode.isNull()) {
+        parent.insertBefore(ul, beforeNode);
+    }
+    else {
+        parent.insertAfter(ul, beforeNode);
+    }
 }
 
 bool Ulli::checkReplaceableTags(const QString sequenceTag) {
@@ -297,13 +302,11 @@ bool OutputData::xmlToHtml(const QString xmlFilename, const QString htmlFilename
     return true;
 }
 
-bool OutputData::removeXmllintHeader(const QString htmlFilename) {
+bool OutputData::removeXmlHeader(const QString htmlFilename) {
     QFile in(htmlFilename);
     QFile out(htmlFilename);
 
     QString html;
-    int lengthXmllintHeader;
-
 
     if (!in.open(QIODevice::ReadWrite | QIODevice::Text)) {
         throw QString("functions removeXmllintHeader: Unable to open html file");
