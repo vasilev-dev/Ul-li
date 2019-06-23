@@ -9,7 +9,7 @@
 */
 
 /*!cout-пободный вывод в консоль*/
-#define qprint qDebug().nospace().noquote()
+#define qprint qInfo().nospace().noquote()
 
 /*!Число аргументов командной строки для запуска программы*/
 #define CORRECT_NUMBER_ARGS 5
@@ -32,17 +32,11 @@
 #include <QTextCodec>
 
 /*!
-* Получает QString из стандартного потока ввода
-*\param [out] out - полученная строка
+* Local codec to Unicode
+*\param [in] dataLocalCodec - данные в локальной кодировке
+*\param [out] stringUtf8 - строка в utf-8
 */
-void getQString(QString & out);
-
-/*!
-* Windows-1251 to Unicode
-*\param [in] inputData - массив входных данных
-*\param [out] string - строка
-*/
-void windows1251ToUnicode(QByteArray & inputData, QString & string);
+void localeToUnicode(QByteArray & dataLocalCodec, QString & stringUtf8);
 
 class InputData {
 public:

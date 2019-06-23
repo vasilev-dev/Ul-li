@@ -1,9 +1,10 @@
 ﻿#include <functions.h>
 
-void windows1251ToUnicode(QByteArray & inputData, QString & string) {
-    QTextCodec * defaultTextCodec = QTextCodec::codecForName("Windows-1251");
-    QTextDecoder *decoder = new QTextDecoder(defaultTextCodec);
-    string = decoder->toUnicode(inputData);
+void localeToUnicode(QByteArray & dataLocalCodec, QString & stringUtf8) {
+    QTextCodec *localCodec = QTextCodec::codecForLocale();
+    QString resultUnicode = localCodec->toUnicode(dataLocalCodec);
+    QTextCodec *codecUtf8 = QTextCodec::codecForName("UTF-8");
+    stringUtf8 = codecUtf8->fromUnicode(resultUnicode);
 }
 
 InputData::InputData(int argc, char *argv[]) {
@@ -45,14 +46,12 @@ bool InputData::getHtml(const QString openFrom, const QString outputFilename) {
 
     // Если не удалось загрузить html
     if(response->error() != QNetworkReply::NoError) {
-        throw QString("function dowloadHTML: Unable to access html file at input URL");
+        throw QString("function dowloadHTML: Unable to access html file at input URL ") + url.toString() ;
     }
 
     // Получить html в виде строки
     htmlBa = response->readAll();
-    windows1251ToUnicode(htmlBa, html);
-
-    //html = response->readAll();
+    localeToUnicode(htmlBa, html);
 
     // Cохранение html
     QFile outputHtml(outputFilename);
@@ -60,7 +59,7 @@ bool InputData::getHtml(const QString openFrom, const QString outputFilename) {
     // Если удалось открыть файл для записи
     if(outputHtml.open(QIODevice::WriteOnly)) {
         QTextStream out(&outputHtml);
-        out << html.toUtf8();
+        out << html;
         out.flush();
     }
     else {

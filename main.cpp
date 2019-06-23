@@ -4,6 +4,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    QDir::setCurrent(a.applicationDirPath());
+
     try {
         InputData inputData(argc, argv);
         QDomDocument html;
