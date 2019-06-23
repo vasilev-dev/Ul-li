@@ -7,21 +7,21 @@ void localeToUnicode(QByteArray & dataLocalCodec, QString & stringUtf8) {
     stringUtf8 = codecUtf8->fromUnicode(resultUnicode);
 }
 
-InputData::InputData(int argc, char *argv[]) {
+InputData::InputData(const QStringList & args) {
     supportedParams << "-i";
     supportedParams << "-o";
 
-    if(argc != CORRECT_NUMBER_ARGS) {
+    if(args.length() != CORRECT_NUMBER_ARGS) {
         throw QString("Incorrect number of arguments to run programm");
     }
 
     // обработка входных параментров
-    for(int i = 1; i < argc; i += 2) {
-        if(supportedParams.contains(argv[i])) {
-            params.insert(argv[i], argv[i + 1]);
+    for(int i = 1; i < args.length(); i += 2) {
+        if(supportedParams.contains(args[i])) {
+            params.insert(args[i], args[i + 1]);
         }
         else {
-            throw QString("Unknown flag: ") + argv[i];
+            throw QString("Unknown flag: ") + args[i];
         }
     }
 }

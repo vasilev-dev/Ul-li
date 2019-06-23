@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     QDir::setCurrent(a.applicationDirPath());
 
     try {
-        InputData inputData(argc, argv);
+        InputData inputData(a.arguments());
         QDomDocument html;
         QString inputFile = inputData.getFlagValue("-i");
         QString outputFile = inputData.getFlagValue("-o");

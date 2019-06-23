@@ -41,13 +41,12 @@ void localeToUnicode(QByteArray & dataLocalCodec, QString & stringUtf8);
 class InputData {
 public:
     /*!
-    * Конструктор класса - заполняет поддерживаемые аргументы командной строки
-    *\param [in] argc - количество аргументов командной строки
-    *\param [in] argv - параментры командной строки
+    * Конструктор класса - обрабатывает аргументы командной строки
+    *\param [in] args - аргументы командной строки
 	*\exception QString - Incorrect number of arguments to run programm(define CORRECT_NUMBER_ARGS)
 	*\exception QString - Unknown flag
     */
-    InputData(int argc, char *argv[]);
+    InputData(const QStringList & args);
 
     /*!
     * Получает html-разметку
